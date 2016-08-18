@@ -6,11 +6,11 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
   - Ugh... all the pain
   - How feasible on remote host?  Probably not very
   - Remote host... just encrypt /home and select parts of /var?
-    - How to do that and not have to create a bunch of partitions that cause space to lost that will never be used?
+    - How to do that and not have to create a bunch of partitions that cause space to be lost that will never be used?
     - Requires more thought...
     - Want something that could be done to every host in a consistent manner, whether remote or local, without the possibility of making a remote host inaccessible
 - Security
-  - Create a non-root user
+  - Create a non-root user that can sudo root
   - Secure with 2-factor auth using Google Authenticator
   - Update /etc/ssh/sshd_conf
     - Disallow root login
