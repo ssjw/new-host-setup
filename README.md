@@ -19,6 +19,7 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - Import docker keys
 - apt-get udpate
 - apt-get install docker-machine docker-compose
+- apt-get install tmux
 - Use docker images for custom-crafted services that we want to be able to run anywhere
 
 [1]: https://www.digitalocean.com/community/tutorials/how-to-use-dm-crypt-to-create-an-encrypted-volume-on-an-ubuntu-vps
