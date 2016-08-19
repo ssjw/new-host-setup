@@ -3,14 +3,13 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 
 - Just get tasks down first, then script those tasks
 - Install to encrypted root?
-  - Ugh... all the pain
-  - How feasible on remote host?  Probably not very
+  - dm-crypt disks for local hosts
   - Remote host... just encrypt /home and select parts of /var?
-    - How to do that and not have to create a bunch of partitions that cause space to be lost that will never be used?
-    - Requires more thought...
-    - Want something that could be done to every host in a consistent manner, whether remote or local, without the possibility of making a remote host inaccessible
+    - Refer to [this post about how to create an encrypted loop device][1]
+    - mount sub-dirs of the encrypted loop device onto directories of /?
 - Security
-  - Create a non-root user that can sudo root
+  - Create a non-root user
+  - add new user to sudoers
   - Secure with 2-factor auth using Google Authenticator
   - Update /etc/ssh/sshd_conf
     - Disallow root login
@@ -21,3 +20,5 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - apt-get udpate
 - apt-get install docker-machine?
 - Use docker images for custom-crafted services that we want to be able to run anywhere
+
+[1]: https://www.digitalocean.com/community/tutorials/how-to-use-dm-crypt-to-create-an-encrypted-volume-on-an-ubuntu-vps
