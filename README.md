@@ -8,8 +8,8 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
     - Refer to [this post about how to create an encrypted loop device][1]
     - mount sub-dirs of the encrypted loop device onto directories of /?
 - Security
-  - Create a non-root user
-  - add new user to sudoers
+  - adduser --gecos "" jwheaton
+  - adduser jwheaton sudo
   - Secure with 2-factor auth using Google Authenticator
   - Update /etc/ssh/sshd_conf
     - Disallow root login
@@ -18,7 +18,7 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - Add docker repository for Debian to /etc/apt/sources
 - Import docker keys
 - apt-get udpate
-- apt-get install docker-machine?
+- apt-get install docker-machine docker-compose
 - Use docker images for custom-crafted services that we want to be able to run anywhere
 
 [1]: https://www.digitalocean.com/community/tutorials/how-to-use-dm-crypt-to-create-an-encrypted-volume-on-an-ubuntu-vps
