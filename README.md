@@ -20,7 +20,6 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
     - this user's home directory will be something like /var/home/username
   - don't start any services that are run in docker containers until the encrypted devices are mounted
     - will have to check for those mounts on startup somehow
-    - 
 
 - Security
   - adduser --gecos "" jwheaton
