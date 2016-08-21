@@ -32,7 +32,7 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - Add docker repository for Debian to /etc/apt/sources
 - Import docker keys
 - apt-get udpate
-- apt-get install tmux git
+- apt-get install tmux git dialog
 - apt-get install docker-machine
 - Install docker compose:
 

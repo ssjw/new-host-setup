@@ -32,7 +32,7 @@ do
     ### display main menu ###
     menuchoice=$(dialog --backtitle "New Host Setup Guide" \
         --title "[ M A I N - M E N U ]" \
-        --menu "Choose the TASK" 0 0 4 \
+        --menu "Choose the TASK" 0 0 0 \
         "Add user jwheaton" "Adds jwheaton as a new user" \
         "Add user unlocker" "Adds unlocker as a new user" \
         "Exit" "Exit to the shell" \
@@ -40,9 +40,13 @@ do
 
     exit_status=$?
 
+    case $exit_status in
+        $DIALOG_CANCEL|$DIALOG_ESC) exit 0; break ;;_
+    esac
+
     #  What task was chosen?
     case $menuchoice in
-        "Add user jwheaton") echo "Add user jwheaton";;
+        "Add user jwheaton") bin/adduser-jwheaton;;
         "Add user unlocker") echo "Add user unlocker";;
         "Exit") echo "Bye"; break;;
     esac
