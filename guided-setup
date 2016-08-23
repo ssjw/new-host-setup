@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. bin/setup-vars
+
 #
 # Purpose - display output using msgbox 
 #  $1 -> set msgbox height
@@ -10,17 +12,8 @@ function display_output() {
     local h=${1-10}                 # box height default 10
     local w=${2-41}                 # box width default 41
     local t=${3-Output}     # box title 
-    dialog --backtitle "Linux Shell Script Tutorial" --title "${t}" --clear --msgbox "$(<$OUTPUT)" ${h} ${w}
+    $DIALOG --backtitle "Linux Shell Script Tutorial" --title "${t}" --clear --msgbox "$(<$OUTPUT)" ${h} ${w}
 }
-
-# Define the dialog exit status codes
-: ${DIALOG_OK=0}
-: ${DIALOG_CANCEL=1}
-: ${DIALOG_HELP=2}
-: ${DIALOG_EXTRA=3}
-: ${DIALOG_ITEM_HELP=4}
-: ${DIALOG_ESC=255}
-
 #
 # Main menu
 #
@@ -30,7 +23,7 @@ do
     exec 3>&1
 
     ### display main menu ###
-    menuchoice=$(dialog --backtitle "New Host Setup Guide" \
+    menuchoice=$($DIALOG --backtitle "New Host Setup Guide" \
         --title "[ M A I N - M E N U ]" \
         --menu "Choose the TASK" 0 0 0 \
         "Add user jwheaton" "Adds jwheaton as a new user" \
@@ -40,15 +33,16 @@ do
 
     exit_status=$?
 
+    # Exit on cancel or escape
     case $exit_status in
-        $DIALOG_CANCEL|$DIALOG_ESC) exit 0; break ;;_
+        $DIALOG_CANCEL|$DIALOG_ESC) exit 0;;_
     esac
 
     #  What task was chosen?
     case $menuchoice in
         "Add user jwheaton") bin/adduser-jwheaton;;
         "Add user unlocker") echo "Add user unlocker";;
-        "Exit") echo "Bye"; break;;
+        "Exit") break;;
     esac
 
 done

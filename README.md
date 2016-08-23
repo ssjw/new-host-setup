@@ -30,6 +30,8 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
     - For any additional users created, only allow RSA authentication; no password authentication
       - Maybe by updating default scripts for user creation?
 - Add docker repository for Debian to /etc/apt/sources
+  - apt-get install apt-transport-https ca-certificates
+  - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 - Import docker keys
 - apt-get udpate
 - apt-get install tmux git dialog
