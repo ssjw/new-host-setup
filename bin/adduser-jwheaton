@@ -4,10 +4,6 @@
 
 : ${DIALOG_BACKTITLE="New Host Setup Guide"}
 
-adduser --gecos "" jwheaton | \
-    dialog --backtitle "New Host setup Guide" \
-        --title "adduser jwheaton" \
-        --programbox "script output" 0 0
-    
+adduser --gecos "" jwheaton 2>&1 | tee $(basename $0)-$(date +%F_%T).log
 
 # vim:ts=4:sts=4:sw=4

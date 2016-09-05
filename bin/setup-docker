@@ -16,15 +16,35 @@ case "$DISTRIBUTION_NAME" in
         SOURCES_FILE="/etc/apt/sources.list.d/docker.list" ;;
 esac
 
-apt-get update && \
-    apt-get install apt-transport-https ca-certificates && \
-    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
-    echo "" >> /etc/apt-sources.list && \
-    echo "$DOCKER_REPO" >> $SOURCES_FILE && \
+do_stuff() {
     apt-get update && \
-    apt-get install docker-engine && \
-    service docker start | $DIALOG --backtitle $BTITLE \
-        --title "Setting up docker" \
-        --infobox 0 0
+        apt-get install -y apt-transport-https ca-certificates && \
+        apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
+        if [ -z "$(grep docker $SOURCES_FILE)" ]; then
+            echo "$DOCKER_REPO" >> $SOURCES_FILE
+        fi && \
+            apt-get update && \
+            apt-get install -y docker-engine && \
+            systemctl start docker
+}
 
+do_stuff 2>&1 | tee $(basename $0)-$(date +%F_%T).log
 
+# if jwheaton is a user and isn't a user and isn't in the docker group,
+# add them
+grep -q ^jwheaton /etc/passwd
+ec=$?
+grep -q "^docker.*:jwheaton" /etc/group
+ec2=$?
+
+if [ $ec -eq 0 ]; then
+    if [ $ec2 -ne 0 ]; then
+        adduser jwheaton docker
+    else
+        echo "user jwheaton is already in the docker group"
+    fi
+else
+    echo "user jwheaton doesn't exit; not adding to docker group"
+fi
+
+# vim:sts=4:sw=4:tw=76

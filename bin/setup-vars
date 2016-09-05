@@ -4,7 +4,7 @@
 # more readable.  But they are (intentionally) not exported.  If they were
 # exported, they would also be visible in the dialog program (a subprocess).
 
-: ${DIALOG=whiptail}
+: ${DIALOG=dialog}
 
 : ${DIALOG_OK=0}
 : ${DIALOG_CANCEL=1}
