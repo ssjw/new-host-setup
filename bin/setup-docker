@@ -44,7 +44,7 @@ if [ $ec -eq 0 ]; then
         echo "user jwheaton is already in the docker group"
     fi
 else
-    echo "user jwheaton doesn't exit; not adding to docker group"
+    echo "user jwheaton doesn't exist; not adding to docker group"
 fi
 
 # vim:sts=4:sw=4:tw=76
