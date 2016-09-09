@@ -28,6 +28,7 @@ do
         --menu "Choose the TASK" 0 0 0 \
         "Add user jwheaton" "Adds jwheaton as a new user" \
         "Add user unlocker" "Adds unlocker as a new user" \
+        "Run docker setup" "Sets up docker"
         "Exit" "Exit to the shell" \
         2>&1 1>&3 )
 
@@ -42,9 +43,10 @@ do
     case $menuchoice in
         "Add user jwheaton") bin/adduser-jwheaton;;
         "Add user unlocker") echo "Add user unlocker";;
+        "Run docker setup") bin/setup-docker;;
         "Exit") break;;
     esac
 
 done
 
-# vim:ts=4:sts=4:sw=4
+# vim:ts=4:sts=4:sw=4:tw=76
