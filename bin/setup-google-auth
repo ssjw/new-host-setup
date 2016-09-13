@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Setup Google Authenticator
+
+logfile="$(basename $0)-$(date %F_%T).log"
+
+do_stuff() {
+    apt-get update && \
+        apt-get install libpam-google-authenticator && \
+
+}
+
+# vim:ts=4:sts=4:sw=4:tw=76

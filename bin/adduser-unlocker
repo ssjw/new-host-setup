@@ -2,7 +2,7 @@
 
 # Script to add user unlocker
 
-logfile=$(basename $0)-$(date %F_%T).log
+logfile="$(basename $0)-$(date %F_%T).log"
 
 mkdir -p /home2 2>&1 | tee $logfile
 

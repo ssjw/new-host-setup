@@ -42,7 +42,7 @@ do
     #  What task was chosen?
     case $menuchoice in
         "Add user jwheaton") bin/adduser-jwheaton;;
-        "Add user unlocker") echo "Add user unlocker";;
+        "Add user unlocker") bin/adduser-unlocker;;
         "Run docker setup") bin/setup-docker;;
         "Exit") break;;
     esac

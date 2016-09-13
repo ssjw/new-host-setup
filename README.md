@@ -30,7 +30,7 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 ## Security
 - [x] adduser --gecos "" jwheaton
 - [x] adduser jwheaton sudo
-- [ ] adduser --home /home2/unlocker --gecos "" unlocker
+- [x] adduser --home /home2/unlocker --gecos "" unlocker
 - [ ] [Secure with 2-factor auth using Google Authenticator][2]
 
 - [ ] Update /etc/ssh/sshd_conf

@@ -2,7 +2,9 @@
 
 # Script to add user jwheaton
 
-adduser --gecos "" jwheaton 2>&1 | tee $(basename $0)-$(date +%F_%T).log
+logfile="$(basename $0)-$(date %F_%T).log"
+
+adduser --gecos "" jwheaton 2>&1 | tee $logfile
 
 adduser jwheaton sudo
 
