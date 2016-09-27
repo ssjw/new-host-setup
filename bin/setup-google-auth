@@ -4,10 +4,21 @@
 
 logfile="$(basename $0)-$(date %F_%T).log"
 
+read -r -d '' googleauth_options <<'EOF'
+" RATE_LIMIT 3 30
+" DISALLOW_REUSE
+" TOTP_AUTH
+EOF
 do_stuff() {
     apt-get update && \
-        apt-get install libpam-google-authenticator && \
+        apt-get install -y libpam-google-authenticator openssh-client&& \
+        openssh-server
+      # write ~/.google_authenticator file
+    # 
+
 
 }
+
+do_stuff 2>&1 | tee $logfile
 
 # vim:ts=4:sts=4:sw=4:tw=76

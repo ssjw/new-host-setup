@@ -2,6 +2,7 @@
 
 # Perform steps to setup docker-engine and docker Compose
 
+logfile="$(basename $0)-$(date %F_%T).log"
 . ./setup-vars
 
 # Let's see what distribution we're running (Debian or Ubuntu)
@@ -26,25 +27,26 @@ do_stuff() {
             apt-get update && \
             apt-get install -y docker-engine && \
             systemctl start docker
+
+    # if jwheaton is a user and isn't a user and isn't in the docker group,
+    # add them
+    grep -q ^jwheaton /etc/passwd
+    ec=$?
+    grep -q "^docker.*:jwheaton" /etc/group
+    ec2=$?
+
+    # add jwheaton to the docker group
+    if [ $ec -eq 0 ]; then
+        if [ $ec2 -ne 0 ]; then
+            adduser jwheaton docker
+        else
+            echo "user jwheaton is already in the docker group"
+        fi
+    else
+        echo "user jwheaton doesn't exist; not adding to docker group"
+    fi
 }
 
-do_stuff 2>&1 | tee $(basename $0)-$(date +%F_%T).log
-
-# if jwheaton is a user and isn't a user and isn't in the docker group,
-# add them
-grep -q ^jwheaton /etc/passwd
-ec=$?
-grep -q "^docker.*:jwheaton" /etc/group
-ec2=$?
-
-if [ $ec -eq 0 ]; then
-    if [ $ec2 -ne 0 ]; then
-        adduser jwheaton docker
-    else
-        echo "user jwheaton is already in the docker group"
-    fi
-else
-    echo "user jwheaton doesn't exist; not adding to docker group"
-fi
+do_stuff 2>&1 | tee $logfile
 
 # vim:sts=4:sw=4:tw=76

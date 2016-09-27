@@ -32,12 +32,15 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - [x] adduser jwheaton sudo
 - [x] adduser --home /home2/unlocker --gecos "" unlocker
 - [ ] [Secure with 2-factor auth using Google Authenticator][2]
-
+  - [ ] Install libpam-google-authenticator
+  - [ ] Generate .google_authenticator files for users jwheaton & unlocker
+  - [ ] Display codes for each user
+  - [ ] generate and send pgp-encrypted email with codes to
+    jonathan@ourplaceontheweb.org
 - [ ] Update /etc/ssh/sshd_conf
-  - [ ] Disallow root login
-- [ ] For any additional users created, only allow RSA authentication; no
+  - [ ] Make sure PermitRootLogin is set to "without-password"
+  - [ ] For any additional users created, only allow RSA authentication; no
   password authentication
-  - [ ] Will have to add public keys to authorized_keys first.
 
 ## Other
 ### Docker
