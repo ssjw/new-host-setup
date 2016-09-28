@@ -36,7 +36,7 @@ do
 
     # Exit on cancel or escape
     case $exit_status in
-        $DIALOG_CANCEL|$DIALOG_ESC) exit 0;;_
+        $DIALOG_CANCEL|$DIALOG_ESC) exit 0;;
     esac
 
     #  What task was chosen?
