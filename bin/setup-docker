@@ -28,8 +28,7 @@ do_stuff() {
             apt-get install -y docker-engine && \
             systemctl start docker
 
-    # if jwheaton is a user and isn't a user and isn't in the docker group,
-    # add them
+    # if jwheaton is a user and isn't in the docker group, add them
     grep -q ^jwheaton /etc/passwd
     ec=$?
     grep -q "^docker.*:jwheaton" /etc/group
