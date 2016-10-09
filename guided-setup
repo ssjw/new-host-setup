@@ -28,7 +28,7 @@ do
         --menu "Choose the TASK" 0 0 0 \
         "Add user jwheaton" "Adds jwheaton as a new user" \
         "Add user unlocker" "Adds unlocker as a new user" \
-        "Run docker setup" "Sets up docker"
+        "Run docker setup" "Sets up docker" \
         "Exit" "Exit to the shell" \
         2>&1 1>&3 )
 
