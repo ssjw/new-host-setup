@@ -65,7 +65,9 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - Use docker images for custom-crafted services that we want to be able to run anywhere
 - Dockerized services should be started after all encrypted devices have been mounted
   - How does this get triggered?
-  - Perhaps there is a service started at boot that's checking to see if all encrypted devices have been mounted, and then starts all of the services that depend on them
+  - Perhaps there is a service started at boot that's checking to see if all
+    encrypted devices have been mounted, and then starts all of the services
+    that depend on them
     - Configuration
       - encrypted devices and their mount points (crypttab and/or fstab)
       - Docker services to be started (maybe this is just a yml file for docker-compose)
