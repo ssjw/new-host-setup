@@ -1,6 +1,9 @@
 # Configuring Host backuppi
 
-[TOC]
+1. [Todo](#todo)
+2. [Changing Systemd Boot Target on Debian/Raspbian
+   Jessie](#changing-systemd-boot-target-on-debian-raspbian)
+3. [Firewall configuration](#firewall-configuration)
 
 ## Todo
 1.  keyscript to open encrypted disks
@@ -146,7 +149,7 @@ Then restart the ssh service.
 
 	adduser jwheaton --gecos ""
 
-##Disable Passwordless sudo
+## Disable Passwordless sudo
 
 The default installation of Raspbian on Raspberry Pi adds users to the
 sudoers file as being able to run all commands without entering a
