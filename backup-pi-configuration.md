@@ -1,9 +1,27 @@
 # Configuring Host backuppi
 
-1. [Todo](#todo)
-2. [Changing Systemd Boot Target on Debian/Raspbian
-   Jessie](#changing-systemd-boot-target-on-debian-raspbian)
-3. [Firewall configuration](#firewall-configuration)
+- [Todo](#todo)
+- [Changing Systemd Boot Target on Debian/Raspbian
+  Jessie](#changing-systemd-boot-target-on-debianraspbian-jessie)
+- [Firewall configuration](#firewall-configuration)
+- [SSMTP Configuration](#ssmtp-configuration)
+- [Google Two-Factor Authentication](#google-two-factor-authentication)
+- [Adduser](#adduser)
+- [Disable Passwordless sudo](#disable-passwordless-sudo)
+- [Install BURP](#install-burp)
+- [Add ufw Firewall Rule for BURP](#add-ufw-firewall-rule-for-burp)
+- [Router Port Forwarding](#router-port-forwarding)
+- [Configuring BURP to Start on Boot](#configuring-burp-to-start-on-boot)
+- [Setting Up Disk Encryption](#setting-up-disk-encryption)
+- [Root on an Encrypted Multi-Device
+  Filesystem](#root-on-an-encrypted-multi-device-filesystem)
+- [Swap files Don't Work on BTRFS](#swap-files-dont-work-on-btrfs)
+- [How to SSH into the Pi to Unlock the Encrypted
+  Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
+- [Using a Keyfile to Open the Encrypted Disks During
+  Boot](#using-a-keyfile-to-open-the-encrypted-disks-during-boot)
+- [Configuring Windows Clients to Backup to Two Backup
+  Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
 
 ## Todo
 1.  keyscript to open encrypted disks
@@ -83,11 +101,11 @@ Then enable ufw.  Must be done in this order or you risk losing your SSH connect
 	root:root@backuppi.ourplaceontheweb.org:smtp.gmail.com:587  
 	jwheaton:jwheaton@backuppi.ourplaceontheweb.org:smtp.gmail.com:587
 
-##Google Two-Factor Authentication
+## Google Two-Factor Authentication
 
 	apt-get install libpam-google-authenticator
 
-###Create an Authentication Key
+### Create an Authentication Key
 
 Log in as the user you’ll be logging in with remotely and run the
 google-authenticator command to create a secret key for that user.
@@ -99,8 +117,8 @@ google-authenticator command to create a secret key for that user.
 
 	Picture of a QR code in ASCII art. Nice!
 	
-	Your new secret key is: YIE4KDAHGA867KDJAN
-	Your verification code is 478672
+	Your new secret key is: UHEKTYEKDNBKISYH
+	Your verification code is 887698
 	Your emergency scratch codes are:
 	  xxxxxxxx
 	  xxxxxxxx
