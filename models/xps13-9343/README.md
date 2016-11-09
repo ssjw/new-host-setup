@@ -33,12 +33,12 @@ plus some commands to compile the source and install.
 1. Install `broadcom-sta-source`
 2. As root, run:
 
-    module-assistant prepare broadcom-sta
-    module-assistant auto-install broadcom-sta
+        module-assistant prepare broadcom-sta
+        module-assistant auto-install broadcom-sta
 
   to compile the kernel module, create a Debian package, and install it.
 3. To use immediately, run:
 
-    modprobe wl
+        modprobe wl
 
 vim:ts=2:sw=2:sts=2:tw=76
