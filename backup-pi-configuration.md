@@ -24,7 +24,15 @@
   Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
 
 ## Todo
-1.  keyscript to open encrypted disks
+- [ ] setup SSH server
+- [ ] update ufw for SSH
+- [ ] 
+- [ ] add user jwheaton and setup two-factor auth
+- [ ] disable passwordless sudo
+- [ ] 
+- [ ] configure SSMTP
+- [ ] keyscript to open encrypted disks
+- [ ] 
 
 ## Changing Systemd Boot Target on Debian/Raspbian Jessie
 A seemingly good explanation of Systemd is at
