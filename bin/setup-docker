@@ -2,7 +2,7 @@
 
 # Perform steps to setup docker-engine and docker Compose
 
-logfile="$(basename $0)-$(date %F_%T).log"
+logfile="$(basename $0)-$(date +%FT%T).log"
 . ./setup-vars
 
 # Let's see what distribution we're running (Debian or Ubuntu)
