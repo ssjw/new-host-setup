@@ -55,11 +55,14 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 ### Docker Compose
 - [ ] install docker compose
 
-          curl -L https://github.com/docker/compose/releases/download/1.8.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
+        curl -L https://github.com/docker/compose/releases/download/1.8.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
 
 ### Miscelaneous
-- [ ] apt-get install tmux git dialog
+- [ ] apt-get install tmux git dialog sshd (will need to run manually)
+- [ ] Setup SSH server
+- [ ] Setup static IP
+- [ ] git clone https://github.com/ssjw/new-host-setup.git
 
 ## Docker Usage Notes
 - Use docker images for custom-crafted services that we want to be able to run anywhere

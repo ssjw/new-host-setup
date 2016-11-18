@@ -26,10 +26,8 @@
 ## Todo
 - [ ] setup SSH server
 - [ ] update ufw for SSH
-- [ ] 
 - [ ] add user jwheaton and setup two-factor auth
 - [ ] disable passwordless sudo
-- [ ] 
 - [ ] configure SSMTP
 - [ ] keyscript to open encrypted disks
 - [ ] 

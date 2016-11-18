@@ -2,7 +2,7 @@
 
 # Script to add user jwheaton
 
-logfile="$(basename $0)-$(date %F_%T).log"
+logfile="$(basename $0)-$(date +%FT%T).log"
 
 adduser --gecos "" jwheaton 2>&1 | tee $logfile
 
