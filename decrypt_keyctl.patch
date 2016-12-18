@@ -1,0 +1,28 @@
+--- decrypt_keyctl.orig	2016-12-18 07:20:33.412163916 -0500
++++ decrypt_keyctl	2016-12-18 07:22:06.024161012 -0500
+@@ -31,7 +31,7 @@
+ test -x "$STTY_" && PW_READER_='stty'           # 1. backup method
+ test -x "$ASKPASS_" && PW_READER_='askpass'     # prefered method
+ 
+-KID_=$(keyctl search @u user "$ID_" 2>/dev/null)
++KID_=$(keyctl search @s user "$ID_" 2>/dev/null)
+ if [ $? -ne 0 ] || [ -z "$KID_" ] || [ "$CRYPTTAB_TRIED" -gt 0 ]; then
+     # key not found or wrong, ask the user
+     case "$PW_READER_" in
+@@ -70,13 +70,13 @@
+         # I have cached wrong password and now i may use either `keyctl update`
+         # to update $KID_ or just unlink old key, and add new. With `update` i
+         # may hit "Key has expired", though. So i'll go "unlink and add" way.
+-        keyctl unlink $KID_ @u
++        keyctl unlink $KID_ @s
+         KID_=""
+     fi
+-    KID_=$(echo -n "$KEY_" |keyctl padd user "$ID_" @u)
++    KID_=$(echo -n "$KEY_" |keyctl padd user "$ID_" @s)
+     [ -z "$KID_" ] && die "Error adding passphrase to kernel keyring"
+     if ! keyctl timeout $KID_ $TIMEOUT_; then
+-        keyctl unlink $KID_ @u
++        keyctl unlink $KID_ @s
+         die "Error setting timeout on key ($KID_), removing"
+     fi
+ else
