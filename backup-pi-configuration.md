@@ -392,6 +392,8 @@ Update /etc/fstab
 
 ## How to SSH into the Pi to Unlock the Encrypted Disks
 
+I didn't spend enough time with this to get it to work, so disregard.
+
 Much of this section copied verbatim from
 [http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/].
 
@@ -442,6 +444,9 @@ entered the Pi will boot up the rest of the way.
 
 ## Using a Keyfile to Open the Encrypted Disks During Boot
 
+This is not a good idea, generally.  I came up with a better method that
+opens the encrypted disks remotely after bootup instead.
+
 Create an ext4 filesystem on the USB device
 
 Mount the new filesystem (say, to /mnt/keys) and cd to it.
@@ -478,16 +483,25 @@ password group a disk belongs to.
 > 
 > Currently a work in progress
 
-### Opening Encrypted Disks after Boot
+## Opening Encrypted Disks after Boot
 
-If you want to be able to boot the system without first having to open encrypted disks (and being forced to be present at the console to enter the password), add to the options parameter in the /etc/crypttab file the option "noauto" for each encrypted device, and the same option to the mountpoints within the encrypted devices to /etc/fstab.
+If you want to be able to boot the system without first having to open
+encrypted disks (and being forced to be present at the console to enter
+the password), add to the options parameter in the /etc/crypttab file the
+option "noauto" for each encrypted device, and the same option to the
+mountpoints within the encrypted devices to /etc/fstab.
 
-To be able to open the encrypted devices over a remote connection, you'll have to patch /lib/cryptsetup/scripts/decrypt_keyctl using the decrypt_keyctl.patch patch file in this directory.
+To be able to open the encrypted devices over a remote connection, you'll
+have to patch /lib/cryptsetup/scripts/decrypt_keyctl using the
+decrypt_keyctl.patch patch file in this directory.
 
 	cd /lib/cryptsetup/scripts
 	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
 
-After those setup steps are complete, your system will boot without attempting to open the encrypted devices and mounting the contained filesystems.  You can then remote to the host at your leisure and open encrypted devices and mount filesystems like so:
+After those setup steps are complete, your system will boot without attempting
+to open the encrypted devices and mounting the contained filesystems.  You can
+then remote to the host at your leisure and open encrypted devices and mount
+filesystems like so:
 
 	sudo cryptdisks_start enc1
 	sudo cryptdisks_start enc2
