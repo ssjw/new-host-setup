@@ -478,7 +478,26 @@ password group a disk belongs to.
 > 
 > Currently a work in progress
 
+### Opening Encrypted Disks after Boot
+
+If you want to be able to boot the system without first having to open encrypted disks (and being forced to be present at the console to enter the password), add to the options parameter in the /etc/crypttab file the option "noauto" for each encrypted device, and the same option to the mountpoints within the encrypted devices to /etc/fstab.
+
+To be able to open the encrypted devices over a remote connection, you'll have to patch /lib/cryptsetup/scripts/decrypt_keyctl using the decrypt_keyctl.patch patch file in this directory.
+
+	cd /lib/cryptsetup/scripts
+	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
+
+After those setup steps are complete, your system will boot without attempting to open the encrypted devices and mounting the contained filesystems.  You can then remote to the host at your leisure and open encrypted devices and mount filesystems like so:
+
+	sudo cryptdisks_start enc1
+	sudo cryptdisks_start enc2
+	sudo cryptdisks_start enc3
+	sudo mount /var/spool/burp
+	sudo mount /mnt/media
+
 ## Configuring Windows Clients to Backup to Two Backup Servers
+
+Section to be filled in.  May no longer be needed, as I might just use a cloud backup solution.
 
   [https://wiki.archlinux.org/index.php/systemd]: https://www.google.com/url?q=https://wiki.archlinux.org/index.php/systemd&sa=D&ust=1472810182470000&usg=AFQjCNEROwjhkC0q1tVlF4O1mT8yynJ3dQ
   [systemd-fstab-generator]: https://www.google.com/url?q=http://www.freedesktop.org/software/systemd/man/systemd-fstab-generator.html&sa=D&ust=1472810182552000&usg=AFQjCNG22289OhC2z8g677QmLtvlUyX7NA
