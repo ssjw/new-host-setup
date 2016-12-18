@@ -450,7 +450,7 @@ opens the encrypted disks remotely after bootup instead.
 
 Create an ext4 filesystem on the USB device
 
-Mount the new filesystem (say, to /mnt/keys) and cd to it.
+Mount the new filesystem (say, to `/mnt/keys`) and cd to it.
 
 Create a keyfile
 
@@ -488,20 +488,20 @@ password group a disk belongs to.
 
 If you want to be able to boot the system without first having to open
 encrypted disks (and being forced to be present at the console to enter
-the password), add to the options parameter in the /etc/crypttab file the
+the password), add to the options parameter in the `/etc/crypttab` file the
 option "noauto" for each encrypted device, and the same option to the
 mountpoints within the encrypted devices to /etc/fstab.
 
 To be able to open the encrypted devices over a remote connection, you'll
-have to patch /lib/cryptsetup/scripts/decrypt_keyctl using the
-decrypt_keyctl.patch patch file in this directory.
+have to patch `/lib/cryptsetup/scripts/decrypt_keyctl` using the
+`decrypt_keyctl.patch` patch file in this directory.
 
 	cd /lib/cryptsetup/scripts
 	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
 
 Why is this patch needed?  It originally uses the user keyring -- this patch
 changes it to use the default session keyring.  The problem is that you run
-the script as root (via cryptdisks_start), but the real user (e.g. jwheaton)
+the script as root (via `cryptdisks_start`), but the real user (e.g. jwheaton)
 doesn't have privileges to change attributes (like the timeout) of root's
 user keyring, leading to permission denied errors in the script.  Using the
 default session keyring instead (one is created the first time a secret is
