@@ -20,6 +20,7 @@
   Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
 - [Using a Keyfile to Open the Encrypted Disks During
   Boot](#using-a-keyfile-to-open-the-encrypted-disks-during-boot)
+- [Opening Encrypted Disks After Boot](#opening-encrypted-disks-after-boot)
 - [Configuring Windows Clients to Backup to Two Backup
   Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
 
@@ -483,7 +484,7 @@ password group a disk belongs to.
 > 
 > Currently a work in progress
 
-## Opening Encrypted Disks after Boot
+## Opening Encrypted Disks After Boot
 
 If you want to be able to boot the system without first having to open
 encrypted disks (and being forced to be present at the console to enter
