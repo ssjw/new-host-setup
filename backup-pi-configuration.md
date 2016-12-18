@@ -499,6 +499,16 @@ decrypt_keyctl.patch patch file in this directory.
 	cd /lib/cryptsetup/scripts
 	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
 
+Why is this patch needed?  It originally uses the user keyring -- this patch
+changes it to use the default session keyring.  The problem is that you run
+the script as root (via cryptdisks_start), but the real user (e.g. jwheaton)
+doesn't have privileges to change attributes (like the timeout) of root's
+user keyring, leading to permission denied errors in the script.  Using the
+default session keyring instead (one is created the first time a secret is
+added to the default session keyring) avoids this problem altogether. More
+information can be found on a blogpost about [working with the kernel
+keyring].
+
 After those setup steps are complete, your system will boot without attempting
 to open the encrypted devices and mounting the contained filesystems.  You can
 then remote to the host at your leisure and open encrypted devices and mount
@@ -523,5 +533,6 @@ Section to be filled in.  May no longer be needed, as I might just use a cloud b
     https://www.google.com/url?q=https://btrfs.wiki.kernel.org/index.php/FAQ%23Does_btrfs_support_swap_files.3F&sa=D&ust=1472810182566000&usg=AFQjCNFWj_10lZMmC3UTd6E_avzbQQZU1Q
   [http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/]: https://www.google.com/url?q=http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/&sa=D&ust=1472810182572000&usg=AFQjCNFDk8bwajqAavbSW2AapaKQphaJVg
   [https://github.com/gebi/keyctl\_keyscript]: https://www.google.com/url?q=https://github.com/gebi/keyctl_keyscript&sa=D&ust=1472810182588000&usg=AFQjCNEyMW7a2XQdmPlbeMXOgldsxjR8RQ
+  [working with the kernel keyring]: https://mjg59.dreamwidth.org/37333.html
 
 vim:ft=markdown:sw=4:sts=4:tw=76
