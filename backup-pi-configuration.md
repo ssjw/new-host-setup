@@ -224,8 +224,7 @@ partition.  Note: this finished with an error about writing to file, but
 I think that is probably because the pipe closed when it got to the end
 of the disk.
 
-    openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 \
-    count=1 > /dev/null | base64)" -nosalt < /dev/zero > /dev/sdc
+    openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 > /dev/null | base64)" -nosalt < /dev/zero > /dev/sdc
 
 ### Encrypt the Disks
 
@@ -236,11 +235,9 @@ is needed… the web page I was working from had this command.
 
 Create the encrypted volume:
 
-    cryptsetup --verify-passphrase luksFormat /dev/sdc --cipher \
-    aes-xts-plain64 --key-size 512 --hash sha256
+    cryptsetup --verify-passphrase luksFormat /dev/sdc --cipher aes-xts-plain64 --key-size 512 --hash sha256
 
-    cryptsetup --verify-passphrase luksFormat /dev/sdc --cipher \
-    aes-xts-plain64 --key-size 512 --hash sha256
+    cryptsetup --verify-passphrase luksFormat /dev/sdd --cipher aes-xts-plain64 --key-size 512 --hash sha256
 
 Save password in LastPass
 
