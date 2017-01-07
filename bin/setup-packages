@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Perform steps to setup additional packages which will be needed.
+
+logfile="$(basename $0)-$(date +%FT%T).log"
+. ./setup-vars
+
+# Let's see what distribution we're running (Debian or Ubuntu)
+DISTRIBUTION_NAME=$(awk -- 'BEGIN{FS="="}$1~/^ID/{print $2}' /etc/os-release)
+
+PACKAGE_LIST="cryptsetup-bin "
+
+do_stuff() {
+    apt-get update && \
+        apt-get install -y $PACKAGE_LIST
+}
+
+do_stuff 2>&1 | tee $logfile
+
+# vim:sts=4:sw=4:tw=76

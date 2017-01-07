@@ -26,6 +26,7 @@ do
     menuchoice=$($DIALOG --backtitle "New Host Setup Guide" \
         --title "[ M A I N - M E N U ]" \
         --menu "Choose the TASK" 0 0 0 \
+	"Install additional packages" "Install additional packages" \
         "Add user jwheaton" "Adds jwheaton as a new user" \
         "Add user unlocker" "Adds unlocker as a new user" \
         "Run docker setup" "Sets up docker" \
@@ -41,6 +42,7 @@ do
 
     #  What task was chosen?
     case $menuchoice in
+	"Install additional packages") bin/setup-packages;;
         "Add user jwheaton") bin/adduser-jwheaton;;
         "Add user unlocker") bin/adduser-unlocker;;
         "Run docker setup") bin/setup-docker;;

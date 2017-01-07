@@ -3,7 +3,7 @@
 # Perform steps to setup docker-engine and docker Compose
 
 logfile="$(basename $0)-$(date +%FT%T).log"
-. ./setup-vars
+. bin/setup-vars
 
 # Let's see what distribution we're running (Debian or Ubuntu)
 DISTRIBUTION_NAME=$(awk -- 'BEGIN{FS="="}$1~/^ID/{print $2}' /etc/os-release)
