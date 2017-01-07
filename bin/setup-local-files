@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Perform steps to setup additional packages which will be needed.
+
+logfile="$(basename $0)-$(date +%FT%T).log"
+
+# cd into the directory the script resides in.
+cd $(dirname $0)
+
+. ./setup-vars
+
+# Create an associative array of files and their destinations.
+declare -A file_list
+
+file_list["mylsblk"]="/usr/local/bin"
+
+do_stuff() {
+    echo "About to start copying files"
+    for i in "${!file_list[@]}"
+    do
+	cp -v "$i" "${file_list[$i]}" 
+    done
+}
+
+do_stuff 2>&1 | tee $logfile
+
+# vim:sts=4:sw=4:tw=76
