@@ -63,6 +63,10 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
 - [ ] Setup SSH server
 - [ ] Setup static IP
 - [ ] git clone https://github.com/ssjw/new-host-setup.git
+- [x] script to add additional packages to OS.
+- [x] script to copy stuff to /usr/local/bin (mylsblk)
+- [ ] script to setup Vim environment (plug-ins, .vimrc, etc.)
+- [ ] script to run cryptsetup
 
 ## Docker Usage Notes
 - Use docker images for custom-crafted services that we want to be able to run anywhere
