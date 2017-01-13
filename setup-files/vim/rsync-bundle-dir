@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Script to sync the bundle directory from git repos and then rsync to
+# the new-host-setup dir.
+
+# 1. git refresh all of the bundle dirs.
+# 2. rsync the bundle dir with the master bundle dir.
+
+cd $HOME/vim-bundles
+
+for i in $(find . -maxdepth 1 ! -name "." -type d -print)
+do
+    cd "$HOME/vim-bundles/$i"
+    echo $i
+    git pull
+done
+
+cd $HOME/src/new-host-setup/setup-files/vim/bundle
+
+rsync -av --exclude=.* $HOME/vim-bundles/* $HOME/src/new-host-setup/setup-files/vim/bundle
+
+# vim:sts=4:sw=4:ts=4:tw=76
