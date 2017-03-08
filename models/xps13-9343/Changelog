@@ -1,0 +1,33 @@
+* apt-get install xclip
+* install (unstable) neovim and follow instructions to set alternatives
+* install chrome per https://www.ubuntuupdates.org/ppa/google_chrome
+* install cryptsetup cryptsetup-bin keyutils
+* install git
+* install xserver-xorg-input-libinput
+* install btrfs-progs
+* encrypted home partition
+* created btrfs on home partition
+* modify /usr/share/X11/xorg.conf.d/60-libinput.conf
+    Section "InputClass"
+        Identifier "libinput touchpad catchall"
+        MatchIsTouchpad "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "libinput"
+        Option "Tapping" "True"
+        Option "PalmDetection" "True"
+        Option "TappingDragLock" "True"
+        Option "NaturalScrolling" "True"
+    EndSection
+* [x] finish copying files
+* [x] wipe old partition
+* [x] encrypt old partition
+* [ ] setup BURP
+* [ ] setup Spideroak
+* [ ] setup mounting encrypted partition
+* [ ] cp /home to encrypted partition
+* [ ] create /home2
+* [ ] create user to unencrypt /home partition, with home in /home2
+* [ ] setup periodic TRIM job (look at Arch Wiki)
+* [ ] install and setup ssmtp
+* [ ] update newer version of vimrc with neovim changes
+* [ ] finish config files in git repo
