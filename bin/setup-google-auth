@@ -29,21 +29,21 @@ justnums=0123456789
 
 authcode=""
 for i in {1..16}; do
-    rand_digit=$(my_random ${#alphanums})
+    rand_digit=$(my_random $((${#alphanums} - 1)))
     authcode=${authcode}${alphanums:${rand_digit}:1}
 done
 
 declare -a backup_codes
 for i in {0..4}; do
     for j in {1..8}; do
-        rand_digit=$(my_random ${#justnums})
+        rand_digit=$(my_random $((${#justnums} - 1)))
         backupcodes[i]=${backupcodes[i]}${justnums:${rand_digit}:1}
     done
 done
 
-echo $authcode
+echo "$authcode : ${#authcode}"
 for i in {0..4}; do
-    echo ${backupcodes[i]}
+    echo "${backupcodes[i]} : ${#backupcodes[i]}"
 done
 
 do_stuff() {
