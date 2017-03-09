@@ -7,7 +7,7 @@ logfile="$(basename $0)-$(date +%FT%T).log"
 cd "$(dirname $0)"
 . ./setup-vars
 
-PACKAGE_LIST="cryptsetup-bin vim"
+PACKAGE_LIST="cryptsetup-bin nvim"
 
 do_stuff() {
     apt-get update && \

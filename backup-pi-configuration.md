@@ -506,6 +506,11 @@ added to the default session keyring) avoids this problem altogether. More
 information can be found on a blogpost about [working with the kernel
 keyring].
 
+I'm still having problems with keyring permissions.  With my Laptop (Ubuntu
+16.10) I have permission problems if I patch decrypt_keyctl, and it works if
+I don't.  I still don't completely understand why only the session keyring
+can be used on one distribution, and only the user keyring on another.
+
 After those setup steps are complete, your system will boot without attempting
 to open the encrypted devices and mounting the contained filesystems.  You can
 then remote to the host at your leisure and open encrypted devices and mount

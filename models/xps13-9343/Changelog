@@ -21,12 +21,12 @@
 * [x] finish copying files
 * [x] wipe old partition
 * [x] encrypt old partition
-* [ ] setup BURP
-* [ ] setup Spideroak
 * [ ] setup mounting encrypted partition
 * [ ] cp /home to encrypted partition
 * [ ] create /home2
 * [ ] create user to unencrypt /home partition, with home in /home2
+* [ ] setup BURP
+* [ ] setup Spideroak
 * [ ] setup periodic TRIM job (look at Arch Wiki)
 * [ ] install and setup ssmtp
 * [ ] update newer version of vimrc with neovim changes

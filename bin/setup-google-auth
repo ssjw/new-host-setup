@@ -2,13 +2,50 @@
 
 # Setup Google Authenticator
 
-logfile="$(basename $0)-$(date %F_%T).log"
+logfile="$(basename $0)-$(date +%FT%T).log"
+echo $logfile
+
+my_random() {
+    local upper_bound
+
+    if [ -z "$1" ]
+    then
+        upper_bound=99
+    else
+        upper_bound="$1"
+    fi
+
+    shuf -i0-$1 -n1 --random-source=/dev/random
+}
 
 read -r -d '' googleauth_options <<'EOF'
 " RATE_LIMIT 3 30
 " DISALLOW_REUSE
 " TOTP_AUTH
 EOF
+
+alphanums=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+justnums=0123456789
+
+authcode=""
+for i in {1..16}; do
+    rand_digit=$(my_random ${#alphanums})
+    authcode=${authcode}${alphanums:${rand_digit}:1}
+done
+
+declare -a backup_codes
+for i in {0..4}; do
+    for j in {1..8}; do
+        rand_digit=$(my_random ${#justnums})
+        backupcodes[i]=${backupcodes[i]}${justnums:${rand_digit}:1}
+    done
+done
+
+echo $authcode
+for i in {0..4}; do
+    echo ${backupcodes[i]}
+done
+
 do_stuff() {
     apt-get update && \
         apt-get install -y libpam-google-authenticator openssh-client&& \
@@ -19,6 +56,6 @@ do_stuff() {
 
 }
 
-do_stuff 2>&1 | tee $logfile
+#do_stuff 2>&1 | tee $logfile
 
 # vim:ts=4:sts=4:sw=4:tw=76
