@@ -21,6 +21,8 @@
 * [x] finish copying files
 * [x] wipe old partition
 * [x] encrypt old partition
+* [ ] echo "set editing-mode vi" >> ~/home/.inputrc
+    This is a config file for readline, which bash and other shells use.
 * [ ] setup mounting encrypted partition
 * [ ] cp /home to encrypted partition
 * [ ] create /home2
