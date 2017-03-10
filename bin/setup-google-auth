@@ -3,7 +3,6 @@
 # Setup Google Authenticator
 
 logfile="$(basename $0)-$(date +%FT%T).log"
-echo $logfile
 
 my_random() {
     local upper_bound
@@ -18,44 +17,67 @@ my_random() {
     shuf -i0-$1 -n1 --random-source=/dev/random
 }
 
-read -r -d '' googleauth_options <<'EOF'
+create_google_auth_file() {
+    local auth_file
+
+    if [ -z "$1" ]
+    then
+        return 1
+    else
+        auth_file="$1/.google_authenticator"
+    fi
+
+    # Don't do anything if the file exists
+    if [ -f "$auth_file" ]
+    then
+        return 1
+    fi
+
+    read -r -d '' googleauth_options <<'EOF'
 " RATE_LIMIT 3 30
 " DISALLOW_REUSE
 " TOTP_AUTH
 EOF
 
-alphanums=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-justnums=0123456789
+    alphanums=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+    justnums=0123456789
 
-authcode=""
-for i in {1..16}; do
-    rand_digit=$(my_random $((${#alphanums} - 1)))
-    authcode=${authcode}${alphanums:${rand_digit}:1}
-done
-
-declare -a backup_codes
-for i in {0..4}; do
-    for j in {1..8}; do
-        rand_digit=$(my_random $((${#justnums} - 1)))
-        backupcodes[i]=${backupcodes[i]}${justnums:${rand_digit}:1}
+    authcode=""
+    for i in {1..16}; do
+        rand_digit=$(my_random $((${#alphanums} - 1)))
+        authcode=${authcode}${alphanums:${rand_digit}:1}
     done
-done
 
-echo "$authcode : ${#authcode}"
-for i in {0..4}; do
-    echo "${backupcodes[i]} : ${#backupcodes[i]}"
-done
+    declare -a backup_codes
+    for i in {0..4}; do
+        for j in {1..8}; do
+            rand_digit=$(my_random $((${#justnums} - 1)))
+            backupcodes[i]=${backupcodes[i]}${justnums:${rand_digit}:1}
+        done
+    done
+
+    # write ~/.google_authenticator file
+    echo "$authcode" > $auth_file
+    echo "$googleauth_options" >> $auth_file
+    for i in {0..4}; do
+        echo "${backupcodes[i]}" >> $auth_file
+    done
+}
 
 do_stuff() {
     apt-get update && \
-        apt-get install -y libpam-google-authenticator openssh-client&& \
-        openssh-server
-      # write ~/.google_authenticator file
-    # 
+        apt-get install -y libpam-google-authenticator openssh-client \
+        openssh-server || exit 1
 
+    for i in $(ls /home 2>/dev/null); do
+        create_google_auth_file "/home/${i}"
+    done
 
+    for i in $(ls /home2 2>/dev/null); do
+        create_google_auth_file "/home2/${i}"
+    done
 }
 
-#do_stuff 2>&1 | tee $logfile
+do_stuff 2>&1 | tee $logfile
 
 # vim:ts=4:sts=4:sw=4:tw=76
