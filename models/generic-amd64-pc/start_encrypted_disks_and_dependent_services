@@ -4,18 +4,18 @@
 # that have the noauto option, and then starts the services passed on the
 # commandline.
 
-if [ "$#" == "0" ] then
+if [ "$#" == "0" ]; then
     echo "No services given; taking no action."
     exit 1
 fi
 
 for i in $(grep ^enc /etc/crypttab | cut -f 1 -d ' '); do
     cryptsetup status enc1 | head -1 | grep -qs active
-    if [ $? == 0 ] then
+    if [ $? == 0 ]; then
         echo "${i} is already active, skipping."
     else
         cryptdisks_start ${i}
-        if [ $? == 1 ] then
+        if [ $? == 1 ]; then
             >&2 echo "Failed to open encrypted device ${i}. Aborting." 
             exit 1
         fi
@@ -23,28 +23,32 @@ for i in $(grep ^enc /etc/crypttab | cut -f 1 -d ' '); do
 done
 
 for i in $(grep -v '^#' /etc/fstab | grep noauto | cut -f 2 -d ' '); do
-    echo "Mounting ${i}"
-    mount ${i}
-    if [ $? == 1 ] then
-        >&2 echo "Failed to mount ${i}. Aborting"
-        exit 1
+    mount | grep -qs "${i}"
+    if [ $? == 0 ]; then
+        echo "${i} is already mounted, skipping."
+    else
+        echo "Mounting ${i}"
+        mount ${i}
+        if [ $? == 1 ]; then
+            >&2 echo "Failed to mount ${i}. Aborting"
+            exit 1
+        fi
     fi
 done
 
 while (( "$#" )); do
-    if [ $(systemctl is-active ${1}) == "active") ] then
+    if [ $(systemctl is-active ${1}) == "active" ]; then
         systemctl status ${1} | grep -qs 'active\s*(running)'
-        if [ $? == 0 ] then
+        if [ $? == 0 ]; then
             echo "${1} is already running, skipping"
         else
             echo "Starting ${1}"
             systemctl start ${1}
+            sleep 2
         fi
     else
         >&2 echo "Service ${1} is not active, skipping."
     fi
-
-    sleep 2
 
     shift
 done
