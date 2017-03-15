@@ -18,6 +18,40 @@ my_random() {
 }
 
 create_google_auth_file() {
+    local username
+
+    if [ -z "$1" ]
+    then
+        return 1
+    else
+        username="$1"
+    fi
+
+    # Don't do anything if the file exists
+    if [[ -f "/home/$username/.google_authenticator" || \
+          -f "/home2/$username/.google_authenticator" ]]
+    then
+        echo ".google_authenticator file already exists for user $username"
+        return 1
+    fi
+
+    su -c 'google-authenticator --time-based --disallow-reuse --force \
+        --quiet --qr-mode=NONE --rate-limit=3 --rate-time=30 \
+        --window-size=3' $username
+
+    if [ $? == 0 ]
+    then
+        echo ".google_authenticator file created."
+    else
+        echo "something went wrong generating .google_authenticator file"
+        return 1
+    fi
+}
+
+# I spent a lot of time on this... then found I could achieve the same thing
+# using the helper program from the google authenticator pam package.  That
+# should always work in the face of changes.
+create_google_auth_file_old() {
     local auth_file
 
     if [ -z "$1" ]
@@ -64,18 +98,80 @@ EOF
     done
 }
 
-do_stuff() {
+# Update /etc/pam.d/sshd to add configuration required google authentication
+# if not already set.
+setup_pam() {
+    grep "auth\s*required\s*pam_google_authenticator\.so" /etc/pam.d/sshd \
+        > /dev/null 2>&1
+    if [ $? == 0 ]
+    then
+        echo "pam_google_authenticator.so already set to required in /etc/pam.d/sshd."
+        return 0
+    fi
+
+    echo "auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+    echo "Added \"auth required pam_google_authenticator.so\" to /etc/pam.d/sshd"
+}
+
+# Change ChallengeResonseAuthentication to yes in the /etc/ssh/sshd_config
+# file (if not already yes), or add it to the bottom of the file if not
+# already configured.
+setup_sshd_config() {
+    grep "^ChallengeResponseAuthentication\s*yes" /etc/ssh/sshd_config \
+        > /dev/null 2>&1
+    if [ $? == 0 ]
+    then
+        echo "ChallengeResponseAuthentication already set to \"yes\" in /etc/ssh/sshd_config."
+        return 0
+    fi
+
+    backup_filename="/etc/ssh/sshd_config-$(date +%FT%T)"
+    cp /etc/ssh/sshd_config ${backup_filename}
+
+    if [ $? = 0 ]
+    then
+        echo "Copied /etc/ssh/sshd_config to ${backup_filename}"
+    else
+        echo "Unable to make a backup copy of /etc/sshd_config. Aborting update"
+        return 1
+    fi
+
+    awk 'BEGIN { found_string = 0 }
+        /^ChallengeResponseAuthentication/ {
+            found_string = 1;
+            print "ChallengeResponseAuthentication yes"
+            next
+        }
+        { print }
+        END {
+                if (found_string == 0) {
+                    print "ChallengeResponseAuthentication yes"
+                }
+            } ' ${backup_filename} > /etc/ssh/sshd_config
+
+    echo "Updated /etc/ssh/sshd_config to add \"ChallengeResponseAuthentication yes\""
+}
+
+install_packages() {
     apt-get update && \
         apt-get install -y libpam-google-authenticator openssh-client \
-        openssh-server || exit 1
+        openssh-server gawk || exit 1
+}
+
+do_stuff() {
+    install_packages
 
     for i in $(ls /home 2>/dev/null); do
-        create_google_auth_file "/home/${i}"
+        create_google_auth_file "${i}"
     done
 
     for i in $(ls /home2 2>/dev/null); do
-        create_google_auth_file "/home2/${i}"
+        create_google_auth_file "${i}"
     done
+
+    setup_pam
+    setup_sshd_config
+    systemctl restart ssh 
 }
 
 do_stuff 2>&1 | tee $logfile
