@@ -17,30 +17,28 @@ Stuff to do when setting up a new (Debian/Ubuntu) host
   - [ ] format big devices with btrfs (for local, use mirroring for data)
   - [ ] Create subvolumes in btrfs filesystem to mount to /home and selected
     directories in /var
-  - [ ] A script in boot script (/etc/rc.d) will check for the presence of a key
-    file (in configurable location, but typically a usb thumb drive) and use
-    it to open the encrypted devices
   - [ ] add a user that will only be used to login and decrypt disks after
     bootup (only needed if usbdrive with key to unlock disks is not present)
     - [ ] this user's home directory will be something like /home2/unlocker
   - [ ] don't start any services that are run in docker containers until the
     encrypted devices are mounted
-    - [ ] will have to check for those mounts on startup somehow
+    - [x] will have to check for those mounts on startup somehow
 
 ## Security
 - [x] adduser --gecos "" jwheaton
 - [x] adduser jwheaton sudo
 - [x] adduser --home /home2/unlocker --gecos "" unlocker
 - [ ] [Secure with 2-factor auth using Google Authenticator][2]
-  - [ ] Install libpam-google-authenticator
-  - [ ] Generate .google_authenticator files for users jwheaton & unlocker
-  - [ ] Display codes for each user
+  - [x] Install libpam-google-authenticator
+  - [x] Generate .google_authenticator files for users jwheaton & unlocker
   - [ ] generate and send pgp-encrypted email with codes to
-    jonathan@ourplaceontheweb.org
-- [ ] Update /etc/ssh/sshd_conf
-  - [ ] Make sure PermitRootLogin is set to "without-password"
-  - [ ] For any additional users created, only allow RSA authentication; no
-  password authentication
+    jhwheaton@gmail.com
+  - [ ] Update /etc/ssh/sshd_conf
+    - [ ] Make sure PermitRootLogin is set to "without-password"
+    - [ ] For any additional users created (other than user "unlocker"),
+      only allow RSA authentication; no password authentication (then why
+      setup google_authentication for them?)
+    - [x] Setup /etc/ssh/sshd_conf for Google authentication
 
 ## Other
 ### Docker
