@@ -48,56 +48,6 @@ create_google_auth_file() {
     fi
 }
 
-# I spent a lot of time on this... then found I could achieve the same thing
-# using the helper program from the google authenticator pam package.  That
-# should always work in the face of changes.
-create_google_auth_file_old() {
-    local auth_file
-
-    if [ -z "$1" ]
-    then
-        return 1
-    else
-        auth_file="$1/.google_authenticator"
-    fi
-
-    # Don't do anything if the file exists
-    if [ -f "$auth_file" ]
-    then
-        return 1
-    fi
-
-    read -r -d '' googleauth_options <<'EOF'
-" RATE_LIMIT 3 30
-" DISALLOW_REUSE
-" TOTP_AUTH
-EOF
-
-    alphanums=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
-    justnums=0123456789
-
-    authcode=""
-    for i in {1..16}; do
-        rand_digit=$(my_random $((${#alphanums} - 1)))
-        authcode=${authcode}${alphanums:${rand_digit}:1}
-    done
-
-    declare -a backup_codes
-    for i in {0..4}; do
-        for j in {1..8}; do
-            rand_digit=$(my_random $((${#justnums} - 1)))
-            backupcodes[i]=${backupcodes[i]}${justnums:${rand_digit}:1}
-        done
-    done
-
-    # write ~/.google_authenticator file
-    echo "$authcode" > $auth_file
-    echo "$googleauth_options" >> $auth_file
-    for i in {0..4}; do
-        echo "${backupcodes[i]}" >> $auth_file
-    done
-}
-
 # Update /etc/pam.d/sshd to add configuration required google authentication
 # if not already set.
 setup_pam() {
@@ -162,10 +112,6 @@ do_stuff() {
     install_packages
 
     for i in $(ls /home 2>/dev/null); do
-        create_google_auth_file "${i}"
-    done
-
-    for i in $(ls /home2 2>/dev/null); do
         create_google_auth_file "${i}"
     done
 
