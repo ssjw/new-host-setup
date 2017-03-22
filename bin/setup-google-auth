@@ -37,7 +37,7 @@ create_google_auth_file() {
 
     su -c 'google-authenticator --time-based --disallow-reuse --force \
         --quiet --qr-mode=NONE --rate-limit=3 --rate-time=30 \
-        --window-size=3' $username
+        --window-size=3' ${username}
 
     if [ $? == 0 ]
     then
@@ -46,6 +46,22 @@ create_google_auth_file() {
         echo "something went wrong generating .google_authenticator file"
         return 1
     fi
+}
+
+email_encrypted_google_auth_file() {
+    local username
+
+    if [ -z "$1" ]
+    then
+        return 1
+    else
+        username="$1"
+    fi
+
+    su -c "cat ${HOME}/.google_authenticator | \
+        gpg --armor -ea -r \"jhwheaton@gmail.com\" --batch | \
+        mail -s \"${username}@$(hostname -f) keys\" jhwheaton@gmail.com" \
+        ${username}
 }
 
 # Update /etc/pam.d/sshd to add configuration required google authentication
@@ -105,14 +121,20 @@ setup_sshd_config() {
 install_packages() {
     apt-get update && \
         apt-get install -y libpam-google-authenticator openssh-client \
-        openssh-server gawk || exit 1
+        openssh-server gawk mailutils || exit 1
 }
 
 do_stuff() {
     install_packages
 
     for i in $(ls /home 2>/dev/null); do
-        create_google_auth_file "${i}"
+        # FIXME add failure checks and print error messages, but don't stop
+        # processing.
+        create_google_auth_file "${i}" && \
+            email_encrypted_google_auth_file "${i}"
+    done
+
+    for i in $(ls /home 2>/dev/null); do
     done
 
     setup_pam
