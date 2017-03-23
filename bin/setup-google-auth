@@ -46,6 +46,8 @@ create_google_auth_file() {
         echo "something went wrong generating .google_authenticator file"
         return 1
     fi
+
+    return 0
 }
 
 email_encrypted_google_auth_file() {
@@ -113,7 +115,7 @@ setup_sshd_config() {
                 if (found_string == 0) {
                     print "ChallengeResponseAuthentication yes"
                 }
-            } ' ${backup_filename} > /etc/ssh/sshd_config
+            }' ${backup_filename} > /etc/ssh/sshd_config
 
     echo "Updated /etc/ssh/sshd_config to add \"ChallengeResponseAuthentication yes\""
 }
@@ -130,11 +132,22 @@ do_stuff() {
     for i in $(ls /home 2>/dev/null); do
         # FIXME add failure checks and print error messages, but don't stop
         # processing.
-        create_google_auth_file "${i}" && \
+        # TODO what happens if you require google authenticator, but there's
+        # no google_authenticator file?  If emailing the file fails, should
+        # the google_authenticator file be removed to prevent a situation
+        # where the user login is protected with google authenticator but
+        # there's no knowledge of the keys outside of that host?
+        create_google_auth_file "${i}"
+        if [ $? == 0 ]
+        then
             email_encrypted_google_auth_file "${i}"
-    done
-
-    for i in $(ls /home 2>/dev/null); do
+            if [ $? != 0 ]
+            then
+                echo "Emailing .google_authenticator file contents failed for user ${i}"
+            fi
+        else
+            
+        fi
     done
 
     setup_pam
