@@ -64,6 +64,19 @@ email_encrypted_google_auth_file() {
         gpg --armor -ea -r \"jhwheaton@gmail.com\" --batch | \
         mail -s \"${username}@$(hostname -f) keys\" jhwheaton@gmail.com" \
         ${username}
+
+    if [ $? != 0 ]
+    then
+        echo "WARNING! Emailing keys (encrypted for jhwheaton@gmail.com) failed."
+        echo "If you don't take other action to save these keys somewhere accessible"
+        echo "to you, you will not be able to log into account: ${username}."
+        echo "For a virtual private server in the cloud, this could mean you will"
+        echo "have no way to access the server and will be forced to destroy it."
+
+        return 1
+    else
+        return 0
+    fi
 }
 
 # Update /etc/pam.d/sshd to add configuration required google authentication
@@ -130,24 +143,8 @@ do_stuff() {
     install_packages
 
     for i in $(ls /home 2>/dev/null); do
-        # FIXME add failure checks and print error messages, but don't stop
-        # processing.
-        # TODO what happens if you require google authenticator, but there's
-        # no google_authenticator file?  If emailing the file fails, should
-        # the google_authenticator file be removed to prevent a situation
-        # where the user login is protected with google authenticator but
-        # there's no knowledge of the keys outside of that host?
         create_google_auth_file "${i}"
-        if [ $? == 0 ]
-        then
-            email_encrypted_google_auth_file "${i}"
-            if [ $? != 0 ]
-            then
-                echo "Emailing .google_authenticator file contents failed for user ${i}"
-            fi
-        else
-            
-        fi
+        email_encrypted_google_auth_file "${i}"
     done
 
     setup_pam
