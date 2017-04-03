@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. basedir/functions.sh
+
 # Perform steps to setup docker-engine and docker Compose
 
 logfile="$(basename $0)-$(date +%FT%T).log"
@@ -18,13 +20,21 @@ case "$DISTRIBUTION_NAME" in
 esac
 
 do_stuff() {
-    apt-get update && \
-        apt-get install -y apt-transport-https ca-certificates && \
-        apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
+    apt_get_update && \
+        apt-get install -y apt-transport-https ca-certificates curl \
+        software-properties-common && \
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+        sudo apt-key add - \ &&
+        if [ $(apt-key fingerprint 0EBFCD88 | \
+            grep -s "9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88") \
+            != 0 ]; then
+            echo "Docker public key fingerprint not matched! Removing key from apt key ring."
+            apt-key del 0EBFCD88
+        fi
         if [ -z "$(grep -s docker $SOURCES_FILE)" ]; then
             echo "$DOCKER_REPO" >> $SOURCES_FILE
         fi && \
-            apt-get update && \
+            apt_get_update && \
             apt-get install -y docker-engine && \
             systemctl start docker
 
