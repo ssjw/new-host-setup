@@ -1,14 +1,16 @@
 #!/bin/bash
 
-. basedir/functions.sh
+. $(dirname $0)/functions.sh
+. $(dirname $0)/setup-vars
 
 # Perform steps to setup docker-engine and docker Compose
 
 logfile="$(basename $0)-$(date +%FT%T).log"
-. bin/setup-vars
+
 
 # Let's see what distribution we're running (Debian or Ubuntu)
-DISTRIBUTION_NAME=$(awk -- 'BEGIN{FS="="}$1~/^ID/{print $2}' /etc/os-release)
+DISTRIBUTION_NAME=$(awk -- 'BEGIN{FS="="}$1~/^ID$/{print $2}' /etc/os-release)
+docker_key_pat="9DC8\s*5822\s*9FC7\s*DD38\s*854A\s*E2D8\s*8D81\s*803C\s*0EBF\s*CD88"
 
 case "$DISTRIBUTION_NAME" in
     debian)
@@ -24,19 +26,19 @@ do_stuff() {
         apt-get install -y apt-transport-https ca-certificates curl \
         software-properties-common && \
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-        sudo apt-key add - \ &&
-        if [ $(apt-key fingerprint 0EBFCD88 | \
-            grep -s "9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88") \
-            != 0 ]; then
+        apt-key add - && \
+        if [ -z "$(apt-key fingerprint 0EBFCD88 | grep -s ${docker_key_pat})" ];
+        then
             echo "Docker public key fingerprint not matched! Removing key from apt key ring."
             apt-key del 0EBFCD88
-        fi
-        if [ -z "$(grep -s docker $SOURCES_FILE)" ]; then
-            echo "$DOCKER_REPO" >> $SOURCES_FILE
         fi && \
-            apt_get_update && \
-            apt-get install -y docker-engine && \
-            systemctl start docker
+            if [ -z "$(grep -s docker $SOURCES_FILE)" ];
+            then
+                echo "$DOCKER_REPO" >> $SOURCES_FILE
+            fi && \
+                apt-get update && \
+                apt-get install -y docker-engine && \
+                systemctl start docker
 
     # if jwheaton is a user and isn't in the docker group, add them
     grep -q ^jwheaton /etc/passwd
