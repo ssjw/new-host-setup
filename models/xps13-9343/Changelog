@@ -24,11 +24,12 @@
 * [x] encrypt old partition
 * [x] echo "set editing-mode vi" >> ~/home/.inputrc
     This is a config file for readline, which bash and other shells use.
+* [ ] setup mounting swap as encrypted
 * [ ] setup mounting encrypted partition
 * [ ] cp /home to encrypted partition
 * [ ] create /home2
-* [ ] create user to unencrypt /home partition, with home in /home2
-* [ ] setup BURP
+* [ ] create user unlocker
+* [x] setup BURP
 * [ ] setup Spideroak
 * [ ] setup periodic TRIM job (look at Arch Wiki)
 * [ ] update newer version of vimrc with neovim changes
