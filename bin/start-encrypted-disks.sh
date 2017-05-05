@@ -27,6 +27,17 @@ do_stuff() {
         echo "mounting encrypted device at mount point ${i}..."
         mount ${i}
     done
+
+    # Run host specific commands if they exist.
+    post_open_dir=/usr/local/etc/post-open-encrypted-devices-commands.d
+    this_host=$(hostname)
+    if [ -d ${post_open_dir} ] && [ -d ${post_open_dir}/${this_host} ]; then
+        for i in [ ${post_open_dir}/${this_host}/* ]; do
+            if [ -x ${i} ]; then
+                . ${i}
+            fi
+        done
+    fi
 }
 
 do_stuff 2>&1 | tee $logfile
