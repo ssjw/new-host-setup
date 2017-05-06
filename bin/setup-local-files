@@ -9,16 +9,17 @@ cd $(dirname $0)
 
 . ./setup-vars
 
-# Create an associative array of files and their destinations.
+# An associative array of files and their destinations.
 declare -A file_list
 
-file_list["mylsblk"]="/usr/local/bin"
+file_list["files/usr/local"]="/usr"
 
 do_stuff() {
-    echo "About to start copying files"
-    for i in "${!file_list[@]}"
+    echo "Copying files to their destinations..."
+    for i in "${!file_list[@]}";
     do
-	cp -v "$i" "${file_list[$i]}" 
+        # Archive copy... so recursive.
+        cp -v -a "$i" "${file_list[$i]}" 
     done
 }
 
