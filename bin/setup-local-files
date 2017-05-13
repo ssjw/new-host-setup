@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Perform steps to setup additional packages which will be needed.
+# Copy local files to /usr/local.
 
 logfile="$(basename $0)-$(date +%FT%T).log"
 
