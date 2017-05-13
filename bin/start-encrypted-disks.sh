@@ -1,7 +1,8 @@
 #! /bin/bash
 
 # This script starts the encrypted disks, mounts any subvolumes, and then
-# starts the services that depend on those encrypted disks.
+# runs any executable files found in
+# /usr/local/etc/post-open-encrypted-devices-commands.d/<hostname>/
 
 logfile="$(basename $0)-$(date +%FT%T).log"
 
@@ -31,10 +32,10 @@ do_stuff() {
     # Run host specific commands if they exist.
     post_open_dir=/usr/local/etc/post-open-encrypted-devices-commands.d
     this_host=$(hostname)
-    if [ -d ${post_open_dir} ] && [ -d ${post_open_dir}/${this_host} ]; then
+    if [ -d ${post_open_dir}/${this_host} ]; then
         for i in [ ${post_open_dir}/${this_host}/* ]; do
             if [ -x ${i} ]; then
-                . ${i}
+                ${i}
             fi
         done
     fi
