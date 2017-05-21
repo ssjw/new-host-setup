@@ -19,14 +19,33 @@ get_fstab_entries() {
 do_stuff() {
     # start devices in /etc/crypttab.
     for i in get_crypttab_entries; do
-        echo "starting encrypted device ${i}..."
-        cryptdisks_start ${i}
+        echo "Starting encrypted device ${i}..."
+        cryptsetup status ${i} | head -1 | grep -qs active
+        if [ $? == 0 ]; then
+            echo "${i} is already active, skipping."
+        else
+            cryptdisks_start ${i}
+            if [ $? == 1 ]; then
+                >&2 echo "Failed to open encrypted device ${i}. Aborting." 
+                exit 1
+            fi
+        fi
     done
 
     # mount the "noauto" devices.
     for i in get_fstab_entries; do
-        echo "mounting encrypted device at mount point ${i}..."
-        mount ${i}
+        echo "Mounting encrypted device at mount point ${i}..."
+        mount | grep -qs "${i}"
+        if [ $? == 0 ]; then
+            echo "${i} is already mounted, skipping."
+        else
+            echo "Mounting ${i}"
+            mount ${i}
+            if [ $? == 1 ]; then
+                >&2 echo "Failed to mount ${i}. Aborting"
+                exit 1
+            fi
+        fi
     done
 
     # Run host specific commands if they exist.
