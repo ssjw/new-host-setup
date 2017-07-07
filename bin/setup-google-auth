@@ -60,6 +60,8 @@ email_encrypted_google_auth_file() {
         username="$1"
     fi
 
+    # FIXME bug... ${HOME} is specific to the user running the script, not
+    # the user the script is running for.
     su -c "cat ${HOME}/.google_authenticator | \
         gpg --armor -ea -r \"jhwheaton@gmail.com\" --batch | \
         mail -s \"${username}@$(hostname -f) keys\" jhwheaton@gmail.com" \
@@ -142,6 +144,9 @@ install_packages() {
 do_stuff() {
     install_packages
 
+    # FIXME This is an unreliable way to get the list of home directories
+    # for current users.  grep through /etc/passwd instead (user IDs >
+    # 1000).
     for i in $(ls /home 2>/dev/null); do
         create_google_auth_file "${i}"
         email_encrypted_google_auth_file "${i}"
