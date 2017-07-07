@@ -1,0 +1,27 @@
+#! /bin/bash
+
+# Start the services passed on the commandline.
+
+if [ "$#" == "0" ]; then
+    echo "No services given; taking no action."
+    exit 1
+fi
+
+while (( "$#" )); do
+    if [ $(systemctl is-active ${1}) == "active" ]; then
+        systemctl status ${1} | grep -qs 'active\s*(running)'
+        if [ $? == 0 ]; then
+            echo "${1} is already running, skipping"
+        else
+            echo "Starting ${1}"
+            systemctl start ${1}
+            sleep 2
+        fi
+    else
+        >&2 echo "Service ${1} is not active, skipping."
+    fi
+
+    shift
+done
+
+# vim:tw=76:sts=4:sw=4

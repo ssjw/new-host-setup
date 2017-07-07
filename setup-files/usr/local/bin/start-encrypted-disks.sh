@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# This script starts the encrypted disks, mounts any subvolumes, and then
+# This script starts the encrypted disks, mounts any noauto mounts, and then
 # runs any executable files found in
 # /usr/local/etc/post-open-encrypted-devices-commands.d/<hostname>/
 

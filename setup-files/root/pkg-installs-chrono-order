@@ -1,0 +1,13 @@
+#/bin/sh
+
+for fillo in `ls -tr /var/lib/dpkg/info/*.list` ; 
+    do basename ${fillo} | sed 's/.list$//g' ; 
+done  > forens.txt
+
+ls -ltr /var/lib/dpkg/info/*.list > forentime.txt
+
+for lint in `cat forens.txt` ; do 
+    echo -n "[ ${lint} Installed ] : " ; 
+    echo -n "`grep /${lint}.list forentime.txt | awk '{ print $6, $7, $8 }'` : " ; 
+    ( ( grep -A3 " ${lint}$" /var/lib/apt/extended_states | grep '^Auto' > /dev/null ) && echo "Auto" ) || echo "Manual" ; 
+done > pkgdatetime.txt
