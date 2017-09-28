@@ -8,6 +8,6 @@ mkdir -p /home2 2>&1 | tee $logfile
 
 adduser --home /home2/unlocker --gecos "" unlocker  2>&1 | tee -a $logfile
 
-adduser jwheaton sudo
+adduser unlocker sudo
 
 # vim:ts=4:sts=4:sw=4
