@@ -1,9 +1,9 @@
 # Configuring Host backuppi
 
 - [Todo](#todo)
+- [Firewall configuration for SSH](#firewall-configuration-for-ssh)
 - [Changing Systemd Boot Target on Debian/Raspbian
   Jessie](#changing-systemd-boot-target-on-debianraspbian-jessie)
-- [Firewall configuration](#firewall-configuration)
 - [SSMTP Configuration](#ssmtp-configuration)
 - [Google Two-Factor Authentication](#google-two-factor-authentication)
 - [Adduser](#adduser)
@@ -33,6 +33,24 @@
 - [ ] keyscript to open encrypted disks
 - [ ] 
 
+## Firewall configuration for SSH
+Install UFW (firewall)
+
+    apt-get install ufw
+
+List the available apps:
+
+    ufw app list
+
+Allow OpenSSH
+
+    ufw app info OpenSSH
+    ufw allow OpenSSH
+
+Then enable ufw.  Must be done in this order or you risk losing your SSH connection and not being able to log back in using SSH.  If that happens you'll have to log into the console to then allow OpenSSH.
+
+    ufw enable
+
 ## Changing Systemd Boot Target on Debian/Raspbian Jessie
 A seemingly good explanation of Systemd is at
 [https://wiki.archlinux.org/index.php/systemd].
@@ -49,17 +67,6 @@ To change immediately to the multi-user target issue this command:
 Similarly to change back to the graphical target:
 
     systemctl isolate graphical.target
-
-## Firewall configuration
-First allow OpenSSH
-
-    ufw app list
-    ufw app info OpenSSH
-    ufw allow OpenSSH
-
-Then enable ufw.  Must be done in this order or you risk losing your SSH connection and not being able to log back in using SSH.  If that happens you'll have to log into the console to then allow OpenSSH.
-
-    ufw enable
 
 ## SSMTP Configuration
 ### ssmtp.conf
