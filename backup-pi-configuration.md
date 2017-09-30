@@ -2,8 +2,10 @@
 
 - [Todo](#todo)
 - [Firewall configuration for SSH](#firewall-configuration-for-ssh)
-- [Changing Systemd Boot Target on Debian/Raspbian
-  Jessie](#changing-systemd-boot-target-on-debianraspbian-jessie)
+- [Enabling SSH-server on Debian](#enabling-ssh-server-on-debian)
+- [Configuring a Static IP for the
+    Interface](#configuring-a-static-ip-for-the-interface)
+- [Changing Systemd Boot Target Systemd OSes](#changing-systemd-boot-target-on-systemd-oses)
 - [SSMTP Configuration](#ssmtp-configuration)
 - [Google Two-Factor Authentication](#google-two-factor-authentication)
 - [Adduser](#adduser)
@@ -47,11 +49,38 @@ Allow OpenSSH
     ufw app info OpenSSH
     ufw allow OpenSSH
 
-Then enable ufw.  Must be done in this order or you risk losing your SSH connection and not being able to log back in using SSH.  If that happens you'll have to log into the console to then allow OpenSSH.
+Then enable ufw.  Must be done in this order or you risk losing your SSH
+connection and not being able to log back in using SSH.  If that happens
+you'll have to log into the console to then allow OpenSSH.
 
     ufw enable
 
-## Changing Systemd Boot Target on Debian/Raspbian Jessie
+## Enabling SSH-server on Debian
+Issue the commands:
+
+    systemctl enable ssh-server.service
+    systemctl start ssh-server
+
+## Configuring a Static IP for the Interface
+`dhcpcd` is the dhcp client configured by default on Raspbian to control
+network interfaces.  It's configuration needs to be changed to switch the
+eth0 interface (or wifi interface if using wifi) to be a static address
+instead of one leased from the dhcp server.
+
+Edit /etc/dhcpcd.  Find the example static IP configuration section and
+update to something like the following example, which sets ipv4 address to
+192.168.1.101, disables ipv6 addresses, sets static routers, and sets name
+servers to Google's name servers:
+
+    # Example static IP configuration:
+    interface eth0
+    static ip_address=192.168.1.101/24
+    #static ip6_address=fd51:42f8:caae:d92e::ff/64
+    noipv6rs
+    static routers=192.168.1.1
+    static domain_name_servers=8.8.8.8 8.8.4.4
+
+## Changing Systemd Boot Target on Systemd OSes
 A seemingly good explanation of Systemd is at
 [https://wiki.archlinux.org/index.php/systemd].
 
