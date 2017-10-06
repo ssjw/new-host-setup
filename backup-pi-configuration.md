@@ -68,6 +68,11 @@ Similarly to change back to the graphical target:
 
     systemctl isolate graphical.target
 
+## Configuring for Encrypted Home Directories
+
+    apt-get install gocryptfs libpam-mount
+    
+
 ## SSMTP Configuration
 ### ssmtp.conf
     apt-get install ssmtp
