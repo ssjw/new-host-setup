@@ -4,6 +4,8 @@
 - [Firewall configuration for SSH](#firewall-configuration-for-ssh)
 - [Changing Systemd Boot Target on Debian/Raspbian
   Jessie](#changing-systemd-boot-target-on-debianraspbian-jessie)
+- [Configuring gocryptfs for Encrypted Home
+  Directories](#configuring-gocryptfs-for-encrypted-home-directories)
 - [SSMTP Configuration](#ssmtp-configuration)
 - [Google Two-Factor Authentication](#google-two-factor-authentication)
 - [Adduser](#adduser)
@@ -68,10 +70,40 @@ Similarly to change back to the graphical target:
 
     systemctl isolate graphical.target
 
-## Configuring for Encrypted Home Directories
+## Configuring gocryptfs for Encrypted Home Directories
+
+### Installation
 
     apt-get install gocryptfs libpam-mount
-    
+ 
+### Create a gocryptfs Filesystem:
+
+    mkdir /home/jwheaton.cipher /home/jwheaton
+    gocryptfs -init /home/jwheaton.cipher
+
+When asked for the password, make sure to make it the same as the user's
+login password, or mounting the volume will fail during login.  It likely
+could be mounted manually afterward.
+
+### Configuration
+
+`/etc/security/pam_mount.conf.xml` and `/etc/pam.d/sshd` are mostly
+configured correctly already. We just need to confugure each user's home
+volume in `/etc/security/pam_mount.conf.xml`.
+
+We need to update `/etc/fuse.conf` and make sure the option
+`user_allow_other` exists and is not commented out.  This option will allow
+other users (namely root) to read the mounted directory.  Without this
+option only the user that mounts the volume will be able to read it.
+
+### Add volume configuration to pam_mount.conf.xml
+
+    <volume user="jwheaton" fstype="fuse" options="nodev,nosuid,quiet,nonempty,allow_other"
+            path="/usr/bin/gocryptfs#/home/%(USER).cipher" mountpoint="/home/%(USER)" />
+
+It's possible the user attribute could be set to "%(USER)" as well so that
+all users would have encrypted home directories, but that would be dangerous
+as _not_ all users have encrypted home directories.
 
 ## SSMTP Configuration
 ### ssmtp.conf
