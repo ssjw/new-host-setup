@@ -33,7 +33,6 @@
 - [ ] disable passwordless sudo
 - [ ] configure SSMTP
 - [ ] keyscript to open encrypted disks
-- [ ] 
 
 ## Firewall configuration for SSH
 Install UFW (firewall)
@@ -139,7 +138,7 @@ as _not_ all users have encrypted home directories.
 	# NO - Use the system generated From: address  
 	FromLineOverride=YES
 
-###revaliases
+### revaliases
 
 	vi /etc/ssmtp/revaliases
 
