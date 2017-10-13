@@ -9,8 +9,8 @@ apt_cache_updated_within_minutes () {
         minutes=1440
     fi
 
-    if [ -n "$(find /var/lib/apt/periodic/ -daystart -maxdepth 1 \
-        -mmin -${minutes} -type f -name update-success-stamp)" ]; then
+    if [ -n "$(find /var/cache/apt/ -daystart -maxdepth 1 \
+        -mmin -${minutes} -type f -name pkgcache.bin)" ]; then
         return 0
     else
         return 1
