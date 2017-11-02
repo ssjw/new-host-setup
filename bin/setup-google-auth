@@ -60,9 +60,7 @@ email_encrypted_google_auth_file() {
         username="$1"
     fi
 
-    # FIXME bug... ${HOME} is specific to the user running the script, not
-    # the user the script is running for.
-    su -c "cat ${HOME}/.google_authenticator | \
+    su -c "cat /home/${username}/.google_authenticator | \
         gpg --armor -ea -r \"jhwheaton@gmail.com\" --batch | \
         mail -s \"${username}@$(hostname -f) keys\" jhwheaton@gmail.com" \
         ${username}
@@ -108,30 +106,7 @@ setup_sshd_config() {
         return 0
     fi
 
-    backup_filename="/etc/ssh/sshd_config-$(date +%FT%T)"
-    cp /etc/ssh/sshd_config ${backup_filename}
-
-    if [ $? = 0 ]
-    then
-        echo "Copied /etc/ssh/sshd_config to ${backup_filename}"
-    else
-        echo "Unable to make a backup copy of /etc/sshd_config. Aborting update"
-        return 1
-    fi
-
-    awk 'BEGIN { found_string = 0 }
-        /^ChallengeResponseAuthentication/ {
-            found_string = 1;
-            print "ChallengeResponseAuthentication yes"
-            next
-        }
-        { print }
-        END {
-                if (found_string == 0) {
-                    print "ChallengeResponseAuthentication yes"
-                }
-            }' ${backup_filename} > /etc/ssh/sshd_config
-
+	sed --in-place=$(date +%FT%T) 's/^\w*ChallengeResponseAuthentication.*/ChallengeResponseAuthentication yes/' /etc/ssh/sshd_config
     echo "Updated /etc/ssh/sshd_config to add \"ChallengeResponseAuthentication yes\""
 }
 
