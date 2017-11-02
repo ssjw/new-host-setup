@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# This script starts the encrypted disks, mounts any noauto mounts, and then
+# This script starts the encrypted disks, mounts any subvolumes, and then
 # runs any executable files found in
 # /usr/local/etc/post-open-encrypted-devices-commands.d/<hostname>/
 
@@ -18,9 +18,9 @@ get_fstab_entries() {
 
 do_stuff() {
     # start devices in /etc/crypttab.
-    for i in get_crypttab_entries; do
+    for i in $(get_crypttab_entries); do
         echo "Starting encrypted device ${i}..."
-        cryptsetup status ${i} | head -1 | grep -qs active
+        cryptsetup status ${i} | head -1 | grep -qs "\<active\>"
         if [ $? == 0 ]; then
             echo "${i} is already active, skipping."
         else
@@ -33,7 +33,7 @@ do_stuff() {
     done
 
     # mount the "noauto" devices.
-    for i in get_fstab_entries; do
+    for i in $(get_fstab_entries); do
         echo "Mounting encrypted device at mount point ${i}..."
         mount | grep -qs "${i}"
         if [ $? == 0 ]; then
