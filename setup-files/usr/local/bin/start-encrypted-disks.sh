@@ -50,7 +50,7 @@ do_stuff() {
 
     # Run host specific commands if they exist.
     post_open_dir=/usr/local/etc/post-open-encrypted-devices-commands.d
-    this_host=$(hostname)
+    this_host=$(hostname -s)
     if [ -d ${post_open_dir}/${this_host} ]; then
         for i in [ ${post_open_dir}/${this_host}/* ]; do
             if [ -x ${i} ]; then
