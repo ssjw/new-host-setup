@@ -59,8 +59,8 @@ you'll have to log into the console to then allow OpenSSH.
 ## Enabling SSH-server on Debian
 Issue the commands:
 
-    systemctl enable ssh-server.service
-    systemctl start ssh-server
+    systemctl enable ssh
+    systemctl start ssh
 
 ## Configuring a Static IP for the Interface
 `dhcpcd` is the dhcp client configured by default on Raspbian to control
@@ -285,6 +285,26 @@ router (when this is host will be backing up remote hosts only)
 
 Edit `/etc/default/burp` after installing burp via apt-get.
 
+## Sensible Encryption Setup
+A sensible setup for encryption that I've settled on is the following:
+
+- A separate partition for encrypted swap
+- An unencrypted filesystem for root (so that we can boot the system and ssh
+    into it to decrypt everything needed to run services and allow normal
+    users to log in)
+- An encrypted btrfs filesystem with subvolumes for mounting at /home,
+    /var/www/, /var/nextcloud/data, /var/mysql, etc.
+- A user (unlocker) with home as /unlocker so that it is accessable on boot
+
+### Normal operation
+1. Allow the system to boot
+2. Log in as unlocker and open the encrypted partition(s)
+3. mount the encrypted partitions
+4. start the services that depend on the encrypted partition
+
+The last two steps can be combined into a script.  Some of this is in the
+ssjw/new-host-setup repo on Github.
+
 ## Setting Up Disk Encryption
 
 ### Write Random Noise to Disk to Mask Filesystem
@@ -293,7 +313,7 @@ This is done to overwrite whatever sensitive data might have already
 been on the drive.  If you've never used the drive, this step is
 probably not needed.  It takes several hours to complete.
 
-Use the following command to right random noise to the entire disk or
+Use the following command to write random noise to the entire disk or
 partition.  Note: this finished with an error about writing to file, but
 I think that is probably because the pipe closed when it got to the end
 of the disk.
