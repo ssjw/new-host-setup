@@ -99,6 +99,8 @@ Similarly to change back to the graphical target:
     systemctl isolate graphical.target
 
 ## Configuring gocryptfs for Encrypted Home Directories
+NOTE: Deprecated. Just use ecryptfs instead.  It uses a kernel module and is
+integrated into Debian/Ubuntu.
 
 ### Installation
 
@@ -329,7 +331,7 @@ with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
 
 ### Create Filesystem on Encrypted Volumes
 
-    mkfs.btrfs -L backuppi-all -m raid1 -d raid0 /dev/mapper/enc1 \
+    mkfs.btrfs -L btrfs01 -m raid1 -d raid0 /dev/mapper/enc1 \
     /dev/mapper/enc2
 
 ### Setup Encrypted Volumes to Open on Boot
@@ -368,7 +370,7 @@ Edit /etc/fstab (this one is from host minotaur)
     #
     # backups, volume label is backups-01
     #
-    UUID=cf4b85bb-bf8a-48cc-8382-25498f31faea /var/spool/burp ext4 errors=remount-ro 0 1
+    #UUID=cf4b85bb-bf8a-48cc-8382-25498f31faea /var/spool/burp ext4 errors=remount-ro 0 1
     #
     # Media filesystem 1.4T, volume label is backups-02, but needs to be changed
     #
