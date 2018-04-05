@@ -16,7 +16,9 @@
 - [Add ufw Firewall Rule for BURP](#add-ufw-firewall-rule-for-burp)
 - [Router Port Forwarding](#router-port-forwarding)
 - [Configuring BURP to Start on Boot](#configuring-burp-to-start-on-boot)
+- [Sensible Encryption Setup](#sensible-encryption-setup)
 - [Setting Up Disk Encryption](#setting-up-disk-encryption)
+- [Moving Root to a USB Device](#moving-root-to-a-usb-device)
 - [Root on an Encrypted Multi-Device
   Filesystem](#root-on-an-encrypted-multi-device-filesystem)
 - [Swap files Don't Work on BTRFS](#swap-files-dont-work-on-btrfs)
@@ -426,7 +428,15 @@ makes systemd to reparse /etc/fstab and pick up the changes) or reboot.
 
     update-initramfs -u `uname -r`
 
+## Moving Root to a USB Device
+A very good article on how to do this is in a [forum
+post](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=44177) at
+raspberrypi.org.
+
 ## Root on an Encrypted Multi-Device Filesystem
+NOTE: I don't do this anymore.  Much too painful.  Instead I just put home
+and any other sensitive directories not needed to boot on an encrypted
+filesystem that is mounted post boot.
 
 Like a btrfs filesystem on top of multiple encrypted hard disks.
 
