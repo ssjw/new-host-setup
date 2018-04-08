@@ -433,6 +433,17 @@ A very good article on how to do this is in a [forum
 post](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=44177) at
 raspberrypi.org.
 
+Also check my [github repo](https://github.com/ssjw/rpi-setup).
+
+Gotchas:
+1. Be careful of the use rootfsoptions.  I spend many hours trying to figure
+   out why my Pi wouldn't boot... it was because I had rootfsoptions (or
+   whatever that boot option is called) in my cmdline.txt.  It's possible it
+   would be okay if it were in the right position... I've used it in other
+   working cmdline.txt files in the past.
+2. ext4 should be fine for the root filesystem... do we really need the
+   benefits of btrfs or some other filesystem?
+
 ## Root on an Encrypted Multi-Device Filesystem
 NOTE: I don't do this anymore.  Much too painful.  Instead I just put home
 and any other sensitive directories not needed to boot on an encrypted
