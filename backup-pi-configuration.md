@@ -249,8 +249,20 @@ Then restart the ssh service.
 ## Adduser
 
 	adduser jwheaton --gecos ""
+    
+    # Especially make sure to do addgroup jwheaton sudo.
+    for i in $(groups pi); do
+        addgroup jwheaton $i
+    done
 
 ## Disable Passwordless sudo
+
+Edit the file in `/etc/sudoers.d`. E.g.  `/etc/sudoers.d/010_pi-nopasswd`
+and comment out the line that gives user pi passwordless sudo.
+
+NOTE: Information below is for a previous version of Raspbian.  It now
+configures users for passwordless sudo by creating files in
+`/etc/sudoers.d/`.
 
 The default installation of Raspbian on Raspberry Pi adds users to the
 sudoers file as being able to run all commands without entering a
