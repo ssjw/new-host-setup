@@ -24,8 +24,6 @@
 - [Swap files Don't Work on BTRFS](#swap-files-dont-work-on-btrfs)
 - [How to SSH into the Pi to Unlock the Encrypted
   Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
-- [Using a Keyfile to Open the Encrypted Disks During
-  Boot](#using-a-keyfile-to-open-the-encrypted-disks-during-boot)
 - [Opening Encrypted Disks After Boot](#opening-encrypted-disks-after-boot)
 - [Configuring Windows Clients to Backup to Two Backup
   Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
@@ -567,47 +565,6 @@ the Pi).
 You should be asked to enter a password, and once a correct one has been
 entered the Pi will boot up the rest of the way.
 
-## Using a Keyfile to Open the Encrypted Disks During Boot
-
-This is not a good idea, generally.  I came up with a better method that
-opens the encrypted disks remotely after bootup instead.
-
-Create an ext4 filesystem on the USB device
-
-Mount the new filesystem (say, to `/mnt/keys`) and cd to it.
-
-Create a keyfile
-
-    dd if=/dev/urandom of=keyfile bs=1024 count=4
-
-Add the keyfile to each encrypted disk
-
-    cryptsetup luksAddKey /dev/sdc /mnt/sdf1/keyfile
-
-    cryptsetup luksAddKey /dev/sdb /mnt/sdf1/keyfile
-
-Add new mount point to /etc/fstab for USB disk
-
-    /dev/disk/by-uuid/51b346cc-5141-44a9-aa99-fad3bb358693 /mnt/keys ext4 errors=remount-ro 0 1
-
-Substituting the actual UUID (from blkid command) for the UUID above.
-
-Edit `/etc/defaults/cryptdisks` and change the `CRYPTDISKS\_MOUNT=""` line
-to `="/mnt/keys"`
-
-        CYPTDISKS\_MOUNT="/mnt/keys"
-
-### Reducing the Number of Times a Password Must Be Entered 
-
-Fork this and modify to allow passing path to a key file, as well as the
-password group a disk belongs to.
-
-[https://github.com/gebi/keyctl\_keyscript]
-
-> **NOTE**:
-> 
-> Currently a work in progress
-
 ## Opening Encrypted Disks After Boot
 
 If you want to be able to boot the system without first having to open
@@ -623,20 +580,7 @@ have to patch `/lib/cryptsetup/scripts/decrypt_keyctl` using the
 	cd /lib/cryptsetup/scripts
 	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
 
-Why is this patch needed?  It originally uses the user keyring -- this patch
-changes it to use the default session keyring.  The problem is that you run
-the script as root (via `cryptdisks_start`), but the real user (e.g. jwheaton)
-doesn't have privileges to change attributes (like the timeout) of root's
-user keyring, leading to permission denied errors in the script.  Using the
-default session keyring instead (one is created the first time a secret is
-added to the default session keyring) avoids this problem altogether. More
-information can be found on a blogpost about [working with the kernel
-keyring].
-
-I'm still having problems with keyring permissions.  With my Laptop (Ubuntu
-16.10) I have permission problems if I patch decrypt_keyctl, and it works if
-I don't.  I still don't completely understand why only the session keyring
-can be used on one distribution, and only the user keyring on another.
+See the `decrypt_keyctl.patch` file for an explanation.
 
 After those setup steps are complete, your system will boot without attempting
 to open the encrypted devices and mounting the contained filesystems.  You can
@@ -661,7 +605,6 @@ Section to be filled in.  May no longer be needed, as I might just use a cloud b
   [https://btrfs.wiki.kernel.org/index.php/FAQ\#Does\_btrfs\_support\_swap\_files.3F]:
     https://www.google.com/url?q=https://btrfs.wiki.kernel.org/index.php/FAQ%23Does_btrfs_support_swap_files.3F&sa=D&ust=1472810182566000&usg=AFQjCNFWj_10lZMmC3UTd6E_avzbQQZU1Q
   [http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/]: https://www.google.com/url?q=http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/&sa=D&ust=1472810182572000&usg=AFQjCNFDk8bwajqAavbSW2AapaKQphaJVg
-  [https://github.com/gebi/keyctl\_keyscript]: https://www.google.com/url?q=https://github.com/gebi/keyctl_keyscript&sa=D&ust=1472810182588000&usg=AFQjCNEyMW7a2XQdmPlbeMXOgldsxjR8RQ
   [working with the kernel keyring]: https://mjg59.dreamwidth.org/37333.html
 
 vim:ft=markdown:sw=4:sts=4:tw=76
