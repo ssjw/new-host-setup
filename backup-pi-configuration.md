@@ -1,5 +1,9 @@
-# Configuring Host backuppi
+<header>
+Configuring Host backuppi
+=========================
+</header>
 
+<main>
 - [Todo](#todo)
 - [Firewall configuration for SSH](#firewall-configuration-for-ssh)
 - [Enabling SSH-server on Debian](#enabling-ssh-server-on-debian)
@@ -28,7 +32,7 @@
 - [Configuring Windows Clients to Backup to Two Backup
   Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
 
-## Todo
+# Todo
 - [ ] setup SSH server
 - [ ] update ufw for SSH
 - [ ] add user jwheaton and setup two-factor auth
@@ -36,7 +40,7 @@
 - [ ] configure SSMTP
 - [ ] keyscript to open encrypted disks
 
-## Firewall configuration for SSH
+# Firewall configuration for SSH
 Install UFW (firewall)
 
     apt-get install ufw
@@ -56,13 +60,13 @@ you'll have to log into the console to then allow OpenSSH.
 
     ufw enable
 
-## Enabling SSH-server on Debian
+# Enabling SSH-server on Debian
 Issue the commands:
 
     systemctl enable ssh
     systemctl start ssh
 
-## Configuring a Static IP for the Interface
+# Configuring a Static IP for the Interface
 `dhcpcd` is the dhcp client configured by default on Raspbian to control
 network interfaces.  It's configuration needs to be changed to switch the
 eth0 interface (or wifi interface if using wifi) to be a static address
@@ -81,7 +85,7 @@ servers to Google's name servers:
     static routers=192.168.1.1
     static domain_name_servers=8.8.8.8 8.8.4.4
 
-## Changing Systemd Boot Target on Systemd OSes
+# Changing Systemd Boot Target on Systemd OSes
 A seemingly good explanation of Systemd is at
 [https://wiki.archlinux.org/index.php/systemd].
 
@@ -98,15 +102,15 @@ Similarly to change back to the graphical target:
 
     systemctl isolate graphical.target
 
-## Configuring gocryptfs for Encrypted Home Directories
+# Configuring gocryptfs for Encrypted Home Directories
 NOTE: Deprecated. Just use ecryptfs instead.  It uses a kernel module and is
 integrated into Debian/Ubuntu.
 
-### Installation
+## Installation
 
     apt-get install gocryptfs libpam-mount
  
-### Create a gocryptfs Filesystem:
+## Create a gocryptfs Filesystem:
 
     mkdir /home/jwheaton.cipher /home/jwheaton
     gocryptfs -init /home/jwheaton.cipher
@@ -115,7 +119,7 @@ When asked for the password, make sure to make it the same as the user's
 login password, or mounting the volume will fail during login.  It likely
 could be mounted manually afterward.
 
-### Configuration
+## Configuration
 
 `/etc/security/pam_mount.conf.xml` and `/etc/pam.d/sshd` are mostly
 configured correctly already. We just need to confugure each user's home
@@ -126,7 +130,7 @@ We need to update `/etc/fuse.conf` and make sure the option
 other users (namely root) to read the mounted directory.  Without this
 option only the user that mounts the volume will be able to read it.
 
-### Add volume configuration to pam_mount.conf.xml
+## Add volume configuration to pam_mount.conf.xml
 
     <volume user="jwheaton" fstype="fuse" options="nodev,nosuid,quiet,nonempty,allow_other"
             path="/usr/bin/gocryptfs#/home/%(USER).cipher" mountpoint="/home/%(USER)" />
@@ -135,8 +139,8 @@ It's possible the user attribute could be set to "%(USER)" as well so that
 all users would have encrypted home directories, but that would be dangerous
 as _not_ all users have encrypted home directories.
 
-## SSMTP Configuration
-### ssmtp.conf
+# SSMTP Configuration
+## ssmtp.conf
     apt-get install ssmtp
     vi /etc/ssmtp/ssmtp.conf
 
@@ -169,7 +173,7 @@ as _not_ all users have encrypted home directories.
 	# NO - Use the system generated From: address  
 	FromLineOverride=YES
 
-### revaliases
+## revaliases
 
 	vi /etc/ssmtp/revaliases
 
@@ -182,11 +186,11 @@ as _not_ all users have encrypted home directories.
 	root:root@backuppi.ourplaceontheweb.org:smtp.gmail.com:587  
 	jwheaton:jwheaton@backuppi.ourplaceontheweb.org:smtp.gmail.com:587
 
-## Google Two-Factor Authentication
+# Google Two-Factor Authentication
 
 	apt-get install libpam-google-authenticator
 
-### Create an Authentication Key
+## Create an Authentication Key
 
 Log in as the user you’ll be logging in with remotely and run the
 google-authenticator command to create a secret key for that user.
@@ -244,7 +248,7 @@ Then restart the ssh service.
 
 	service ssh restart
 
-## Adduser
+# Adduser
 
 	adduser jwheaton --gecos ""
     
@@ -253,7 +257,7 @@ Then restart the ssh service.
         addgroup jwheaton $i
     done
 
-## Disable Passwordless sudo
+# Disable Passwordless sudo
 
 Edit the file in `/etc/sudoers.d`. E.g.  `/etc/sudoers.d/010_pi-nopasswd`
 and comment out the line that gives user pi passwordless sudo.
@@ -271,11 +275,11 @@ password.  This is a security risk, so:
 find the line for the the user `(jwheaton)`, and remove the `"NOPASSWD:"` in
 front of the last `"ALL"`.
 
-## Install BURP
+# Install BURP
 
 Consult the BURP install document.
 
-## Add ufw Firewall Rule for BURP
+# Add ufw Firewall Rule for BURP
 
     vi /etc/ufw/applications.d/burp
 
@@ -288,16 +292,16 @@ Consult the BURP install document.
 
     ufw allow burp
 
-## Router Port Forwarding
+# Router Port Forwarding
 
 Don't forget to port forward the two ports 4971 and 4972 on the WAN
 router (when this is host will be backing up remote hosts only)
 
-## Configuring BURP to Start on Boot
+# Configuring BURP to Start on Boot
 
 Edit `/etc/default/burp` after installing burp via apt-get.
 
-## Sensible Encryption Setup
+# Sensible Encryption Setup
 A sensible setup for encryption that I've settled on is the following:
 
 - A separate partition for encrypted swap
@@ -308,7 +312,7 @@ A sensible setup for encryption that I've settled on is the following:
     /var/www/, /var/nextcloud/data, /var/mysql, etc.
 - A user (unlocker) with home as /unlocker so that it is accessable on boot
 
-### Normal operation
+## Normal operation
 1. Allow the system to boot
 2. Log in as unlocker and open the encrypted partition(s)
 3. mount the encrypted partitions
@@ -317,9 +321,9 @@ A sensible setup for encryption that I've settled on is the following:
 The last two steps can be combined into a script.  Some of this is in the
 ssjw/new-host-setup repo on Github.
 
-## Setting Up Disk Encryption
+# Setting Up Disk Encryption
 
-### Write Random Noise to Disk to Mask Filesystem
+## Write Random Noise to Disk to Mask Filesystem
 
 This is done to overwrite whatever sensitive data might have already
 been on the drive.  If you've never used the drive, this step is
@@ -332,7 +336,7 @@ of the disk.
 
     openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 > /dev/null | base64)" -nosalt < /dev/zero > /dev/sdc
 
-### Encrypt the Disks
+## Encrypt the Disks
 
 Load some kernel modules that we'll need.  I'm not sure the manual load
 is needed… the web page I was working from had this command.
@@ -349,7 +353,7 @@ Save password in LastPass
 
 TODO: create hard copy and put in safe.
 
-### Open the Encrypted Volumes
+## Open the Encrypted Volumes
 
 Now we need to open the encrypted volumes:
 
@@ -361,12 +365,12 @@ The `cryptsetup` command takes a password and decrypts the volumes as block
 devices in /dev (dm-0, dm-1, …) and creates links to them in /dev/mapper
 with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
 
-### Create Filesystem on Encrypted Volumes
+## Create Filesystem on Encrypted Volumes
 
     mkfs.btrfs -L btrfs01 -m raid1 -d raid0 /dev/mapper/enc1 \
     /dev/mapper/enc2
 
-### Setup Encrypted Volumes to Open on Boot
+## Setup Encrypted Volumes to Open on Boot
 
 Edit /etc/crypttab
 
@@ -382,7 +386,7 @@ With systemd (default for Ubuntu 15.10, and Debian Jessie), the second
 volume is opened automatically for you after typing in the password at the
 terminal to open the first encrypted volume.
 
-### Setup Filesystem to Mount on Boot
+## Setup Filesystem to Mount on Boot
 
 Edit /etc/fstab (this one is from host minotaur)
 
@@ -420,7 +424,7 @@ Run this command after updating /etc/fstab:
 
     systemctl daemon-reload
 
-### Updating /etc/fstab in a systemd System
+## Updating /etc/fstab in a systemd System
 
 \[systemd-fstab-generator\] is "...a program that reads /etc/fstab at
 boot time and generates units that translate fstab records to the
@@ -434,11 +438,11 @@ is a base requirement for a mount unit named "mnt-zeno.mount".[1]
 After altering fstab one should either run `systemctl daemon-reload` (this
 makes systemd to reparse /etc/fstab and pick up the changes) or reboot.
 
-### Update initramfs
+## Update initramfs
 
     update-initramfs -u `uname -r`
 
-## Moving Root to a USB Device
+# Moving Root to a USB Device
 A very good article on how to do this is in a [forum
 post](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=44177) at
 raspberrypi.org.
@@ -454,7 +458,7 @@ Gotchas:
 2. ext4 should be fine for the root filesystem... do we really need the
    benefits of btrfs or some other filesystem?
 
-## Root on an Encrypted Multi-Device Filesystem
+# Root on an Encrypted Multi-Device Filesystem
 NOTE: I don't do this anymore.  Much too painful.  Instead I just put home
 and any other sensitive directories not needed to boot on an encrypted
 filesystem that is mounted post boot.
@@ -490,7 +494,7 @@ Check crypttab to be sure there is an entry for each encrypted disk.
 These entries tell the boot scripts in the initial ramdisk which disks
 need to be opened before mounting any filesystems
 
-## Swap files Don't Work on BTRFS
+# Swap files Don't Work on BTRFS
 
 For details see:
 [https://btrfs.wiki.kernel.org/index.php/FAQ\#Does\_btrfs\_support\_swap\_files.3F]
@@ -513,7 +517,7 @@ Update /etc/fstab
 
     /dev/mapper/swap none swap sw 0 0
 
-## How to SSH into the Pi to Unlock the Encrypted Disks
+# How to SSH into the Pi to Unlock the Encrypted Disks
 
 I didn't spend enough time with this to get it to work, so disregard.
 
@@ -565,7 +569,7 @@ the Pi).
 You should be asked to enter a password, and once a correct one has been
 entered the Pi will boot up the rest of the way.
 
-## Opening Encrypted Disks After Boot
+# Opening Encrypted Disks After Boot
 
 If you want to be able to boot the system without first having to open
 encrypted disks (and being forced to be present at the console to enter
@@ -593,7 +597,7 @@ filesystems like so:
 	sudo mount /var/spool/burp
 	sudo mount /mnt/media
 
-## Configuring Windows Clients to Backup to Two Backup Servers
+# Configuring Windows Clients to Backup to Two Backup Servers
 
 Section to be filled in.  May no longer be needed, as I might just use a cloud backup solution.
 
@@ -606,5 +610,6 @@ Section to be filled in.  May no longer be needed, as I might just use a cloud b
     https://www.google.com/url?q=https://btrfs.wiki.kernel.org/index.php/FAQ%23Does_btrfs_support_swap_files.3F&sa=D&ust=1472810182566000&usg=AFQjCNFWj_10lZMmC3UTd6E_avzbQQZU1Q
   [http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/]: https://www.google.com/url?q=http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/&sa=D&ust=1472810182572000&usg=AFQjCNFDk8bwajqAavbSW2AapaKQphaJVg
   [working with the kernel keyring]: https://mjg59.dreamwidth.org/37333.html
+</main>
 
 vim:ft=markdown:sw=4:sts=4:tw=76
