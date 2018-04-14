@@ -1,6 +1,8 @@
 <header>
+
 Configuring Host backuppi
 =========================
+
 </header>
 
 <main>
@@ -611,6 +613,7 @@ Section to be filled in.  May no longer be needed, as I might just use a cloud b
     https://www.google.com/url?q=https://btrfs.wiki.kernel.org/index.php/FAQ%23Does_btrfs_support_swap_files.3F&sa=D&ust=1472810182566000&usg=AFQjCNFWj_10lZMmC3UTd6E_avzbQQZU1Q
   [http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/]: https://www.google.com/url?q=http://paxswill.com/blog/2013/11/04/encrypted-raspberry-pi/&sa=D&ust=1472810182572000&usg=AFQjCNFDk8bwajqAavbSW2AapaKQphaJVg
   [working with the kernel keyring]: https://mjg59.dreamwidth.org/37333.html
+
 </main>
 
 vim:ft=markdown:sw=4:sts=4:tw=76
