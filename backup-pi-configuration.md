@@ -1,7 +1,7 @@
 <header>
 
-Configuring Host backuppi
-=========================
+Preparing A Raspberry Pi for Duty
+=================================
 
 </header>
 
@@ -106,8 +106,9 @@ Similarly to change back to the graphical target:
     systemctl isolate graphical.target
 
 # Configuring gocryptfs for Encrypted Home Directories
-NOTE: Deprecated. Just use ecryptfs instead.  It uses a kernel module and is
-integrated into Debian/Ubuntu.
+
+> *NOTE*: Deprecated. Just use ecryptfs instead.  It uses a kernel module and is
+> integrated into Debian/Ubuntu.
 
 ## Installation
 
@@ -265,9 +266,9 @@ Then restart the ssh service.
 Edit the file in `/etc/sudoers.d`. E.g.  `/etc/sudoers.d/010_pi-nopasswd`
 and comment out the line that gives user pi passwordless sudo.
 
-NOTE: Information below is for a previous version of Raspbian.  It now
-configures users for passwordless sudo by creating files in
-`/etc/sudoers.d/`.
+> *NOTE*: Information below is for a previous version of Raspbian.  It now
+> configures users for passwordless sudo by creating files in
+> `/etc/sudoers.d/`.
 
 The default installation of Raspbian on Raspberry Pi adds users to the
 sudoers file as being able to run all commands without entering a
@@ -332,6 +333,12 @@ This is done to overwrite whatever sensitive data might have already
 been on the drive.  If you've never used the drive, this step is
 probably not needed.  It takes several hours to complete.
 
+> *NOTE*: there are faster ways to do this. Just write zeros to the drive.
+> According to forum posts I've found on the Web, writing zeros is just as
+> good with today's drives as writing noise. I don't really care if someone
+> finds out where my filesystem data begins and ends... I'm not trying to hide
+> a filesystem within a filesystem.
+
 Use the following command to write random noise to the entire disk or
 partition.  Note: this finished with an error about writing to file, but
 I think that is probably because the pipe closed when it got to the end
@@ -373,55 +380,45 @@ with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
     mkfs.btrfs -L btrfs01 -m raid1 -d raid0 /dev/mapper/enc1 \
     /dev/mapper/enc2
 
-## Setup Encrypted Volumes to Open on Boot
+## Setup `/etc/crypttab`
 
 Edit /etc/crypttab
 
     # <target name> <source device> <key file> <options>
     # Wait for 24 hours for someone to enter a password
-    enc1 /dev/disk/by-uuid/8515c30a-9227-41a0-9b85-98dba70af9dc none luks,timeout=86400
-    enc2 /dev/disk/by-uuid/489e4f61-e8f8-4d95-9fbe-afe75414bc3f none luks,timeout=86400
+    enc1 /dev/disk/by-uuid/8515c30a-9227-41a0-9b85-98dba70af9dc /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
+    enc2 /dev/disk/by-uuid/489e4f61-e8f8-4d95-9fbe-afe75414bc3f /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
 
-Specifying "none" for the &lt;key file> parameter means to get the
-password from the terminal.
+Specifying the path to a script for the `&lt;key file>` parameter tells the
+`cryptdisks_start` command to use the given script to get the password
+needed to open the disk. I use the `decrypt_keyctl` script with a patch
+applied that I've developed to make it work over an ssh session.
 
-With systemd (default for Ubuntu 15.10, and Debian Jessie), the second
-volume is opened automatically for you after typing in the password at the
-terminal to open the first encrypted volume.
+> *NOTE*: With systemd (default for Ubuntu 15.10, and Debian Jessie), if you
+> are logging in at the graphical interface and if you've specified `none`
+> for the `<key file>` parameter, the second volume is opened automatically
+> for you after typing in the password at the terminal to open the first
+> encrypted volume.
 
-## Setup Filesystem to Mount on Boot
+## Configure `/etc/fstab`
 
 Edit /etc/fstab (this one is from host minotaur)
 
-    # device; this may be used with UUID= as a more robust way to name
-    devices
-    # that works even if disks are added and removed. See fstab(5).
-    #
-    # <file system> <mount point>   <type>     <options>       <dump>  <pass>
-    #
-    # root
-    #
-    UUID=f55c2f1a-a517-40ae-a169-9bc582ce84ec / ext4 errors=remount-ro 0 1
-    #
-    # swap
-    #
-    UUID=58803205-9660-4062-9168-dced3ca81bb4 none swap sw 0 0
-    #
-    # backups, volume label is backups-01
-    #
-    #UUID=cf4b85bb-bf8a-48cc-8382-25498f31faea /var/spool/burp ext4 errors=remount-ro 0 1
-    #
-    # Media filesystem 1.4T, volume label is backups-02, but needs to be changed
-    #
-    UUID=6fe0b91b-b4d8-4698-82f7-c480da0efd60 /mnt/media ext4 errors=remount-ro 0 1
-    #
-    # minotaur-all
-    #
-    /dev/disk/by-uuid/87235b43-74ac-4902-8679-ff4e82111d21 /var/spool/burp btrfs subvol=backup-01,noatime,compress=lzo 0 1
+    /proc           proc    defaults          0       0
+    PARTUUID=efe66302-01  /boot           vfat    defaults 0       2
+    /dev/disk/by-partuuid/be52e505-d77d-40a2-91f5-6940499c8070  / ext4  defaults,noatime  0  1
+    /dev/mapper/swap none swap sw 0 0
+    /dev/mapper/enc1  /var/nextcloud/data  btrfs subvol=nc-file-data,noatime,compress=lzo,noauto  0  1
+    /dev/mapper/enc1  /var/lib/mysql  btrfs subvol=nc-db-data,nodatacow,noatime,noauto  0  1
 
-The last entry is the UUID for the filesystem on the encrypted volume,
-gathered by running "lsblk -f".  For btrfs, use mount options
-"noatime,compress=lzo".  Use Google search if you want to know why.
+We can just use e.g. `/dev/mapper/enc1` here instead of a GUID, because
+cryptsetup will map a GUID to the device name we've specified in the
+`/etc/crypttab` file. For btrfs, use mount options "noatime,compress=lzo".
+Use Google search if you want to know why.
+
+> *NOTE*: For btrfs, the options `compress=lzo` and `nodatacow` are
+> incompatible. If you need `nodatacow`, don't specify compression. Enabling
+> compression disables nodatacow.
 
 Run this command after updating /etc/fstab:
 
@@ -462,9 +459,9 @@ Gotchas:
    benefits of btrfs or some other filesystem?
 
 # Root on an Encrypted Multi-Device Filesystem
-NOTE: I don't do this anymore.  Much too painful.  Instead I just put home
-and any other sensitive directories not needed to boot on an encrypted
-filesystem that is mounted post boot.
+> *NOTE*: I don't do this anymore.  Much too painful.  Instead I just put home
+> and any other sensitive directories not needed to boot on an encrypted
+> filesystem that is mounted post boot.
 
 Like a btrfs filesystem on top of multiple encrypted hard disks.
 
@@ -505,6 +502,9 @@ For details see:
 Work around is an encrypted swap partition.
 
 Create a partition.
+
+> *NOTE*: Use gparted instead. It will create a GUID partition table by
+> default, and takes care of alignment.
 
     # parted /dev/sde
     (parted) mkpart primary linux-swap 1MiB 512MiB
