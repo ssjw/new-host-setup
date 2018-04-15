@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# This script starts the encrypted disks, mounts any subvolumes, and then
-# runs any executable files found in
+# This script starts the encrypted disks, mounts any mount points with the
+# noauto option, and then runs any executable files found in
 # /usr/local/etc/post-open-encrypted-devices-commands.d/<hostname>/
 
 logfile="$(basename $0)-$(date +%FT%T).log"
