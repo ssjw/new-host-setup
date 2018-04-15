@@ -57,6 +57,10 @@ do_stuff() {
                 ${i}
             fi
         done
+    else
+        >&2 echo "No host specific commands for $this_host in"
+        >&2 echo "$post_open_dir/$this_host"
+        >&2 echo "or directories are missing."
     fi
 }
 
