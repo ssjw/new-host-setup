@@ -16,6 +16,10 @@ get_fstab_entries() {
     grep -v "^\s*#" /etc/fstab | gawk -- 'BEGIN{FS=" "}/noauto/{print $2}' -
 }
 
+get_services_entries() {
+    gawk -- 'BEGIN{FS=" "}$0 !~ /^s*#/print $1}' $1
+}
+
 do_stuff() {
     # start devices in /etc/crypttab.
     for i in $(get_crypttab_entries); do
@@ -49,20 +53,16 @@ do_stuff() {
     done
 
     # Run host specific commands if they exist.
-    post_open_dir=/usr/local/etc/post-open-encrypted-devices-commands.d
+    post_open_dir=/usr/local/etc/services.d
     this_host=$(hostname -s)
-    if [ -d ${post_open_dir}/${this_host} ]; then
-        for i in [ ${post_open_dir}/${this_host}/* ]; do
-            if [ -x ${i} ]; then
-                ${i}
-            else
-                echo "$i is not executable, skipping."
-            fi
+    services_file=${post_open_dir}/${this_host}
+    if [ -f ${services_file} ]; then
+        for i in $(get_services_entries ${services_files}); do
+            start-services ${i}
         done
     else
-        echo "No host specific commands for $this_host in"
-        echo "$post_open_dir/$this_host"
-        echo "or directories are missing."
+        echo "No host specific services file ${services_file} for ${this_host} in"
+        echo "${post_open_dir}"
     fi
 }
 
