@@ -389,7 +389,7 @@ Edit /etc/crypttab
     enc1 /dev/disk/by-uuid/8515c30a-9227-41a0-9b85-98dba70af9dc /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
     enc2 /dev/disk/by-uuid/489e4f61-e8f8-4d95-9fbe-afe75414bc3f /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
 
-Specifying the path to a script for the `&lt;key file>` parameter tells the
+Specifying the path to a script for the `<key file>` parameter tells the
 `cryptdisks_start` command to use the given script to get the password
 needed to open the disk. I use the `decrypt_keyctl` script with a patch
 applied that I've developed to make it work over an ssh session.
@@ -402,7 +402,7 @@ applied that I've developed to make it work over an ssh session.
 
 ## Configure `/etc/fstab`
 
-Edit /etc/fstab (this one is from host minotaur)
+Edit `/etc/fstab` (this one is from my Nextcloud Raspberry Pi)
 
     /proc           proc    defaults          0       0
     PARTUUID=efe66302-01  /boot           vfat    defaults 0       2

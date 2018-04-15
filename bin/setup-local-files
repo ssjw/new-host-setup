@@ -5,14 +5,14 @@
 logfile="$(basename $0)-$(date +%FT%T).log"
 
 # cd into the directory the script resides in.
-cd $(dirname $0)
+pushd $(dirname $0)
 
 . ./setup-vars
 
 # An associative array of files and their destinations.
 declare -A file_list
 
-file_list["files/usr/local"]="/usr"
+file_list["../setup-files/usr/local"]="/usr"
 
 do_stuff() {
     echo "Copying files to their destinations..."
@@ -24,5 +24,7 @@ do_stuff() {
 }
 
 do_stuff 2>&1 | tee $logfile
+
+popd
 
 # vim:sts=4:sw=4:tw=76
