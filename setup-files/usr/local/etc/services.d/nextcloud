@@ -1,0 +1,5 @@
+# Start the services that depend encrypted devices. Order could be
+# important.
+mariadb
+apache2
+# vim:tw=76:sts=4:sw=4

@@ -15,6 +15,7 @@ while (( "$#" )); do
         else
             echo "Starting ${1}"
             systemctl start ${1}
+            systemctl status --no-pager ${1}
             sleep 2
         fi
     else
