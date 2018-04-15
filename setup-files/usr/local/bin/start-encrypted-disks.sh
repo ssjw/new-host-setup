@@ -55,12 +55,14 @@ do_stuff() {
         for i in [ ${post_open_dir}/${this_host}/* ]; do
             if [ -x ${i} ]; then
                 ${i}
+            else
+                echo "$i is not executable, skipping."
             fi
         done
     else
-        >&2 echo "No host specific commands for $this_host in"
-        >&2 echo "$post_open_dir/$this_host"
-        >&2 echo "or directories are missing."
+        echo "No host specific commands for $this_host in"
+        echo "$post_open_dir/$this_host"
+        echo "or directories are missing."
     fi
 }
 
