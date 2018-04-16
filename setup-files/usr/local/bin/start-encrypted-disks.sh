@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 # This script starts the encrypted disks, mounts any mount points with the
 # noauto option, and then runs any executable files found in
@@ -17,7 +17,7 @@ get_fstab_entries() {
 }
 
 get_services_entries() {
-    gawk -- 'BEGIN{FS=" "}$0 !~ /^s*#/print $1}' $1
+    gawk -- 'BEGIN{FS=" "}$0 !~ /^s*#/{print $1}' $1
 }
 
 do_stuff() {
@@ -57,7 +57,7 @@ do_stuff() {
     this_host=$(hostname -s)
     services_file=${post_open_dir}/${this_host}
     if [ -f ${services_file} ]; then
-        for i in $(get_services_entries ${services_files}); do
+        for i in $(get_services_entries ${services_file}); do
             start-services ${i}
         done
     else
