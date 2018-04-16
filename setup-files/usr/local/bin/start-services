@@ -21,7 +21,7 @@ while (( "$#" )); do
         fi
     else
         >&2 echo "\"systemctl is-active ${1}\" returned \"${service_state}\"."
-	>&2 echo "Only services that are "active" are started. Skipping ${1}."
+        >&2 echo "Only services that are \"active\" are started. Skipping ${1}."
     fi
 
     shift
