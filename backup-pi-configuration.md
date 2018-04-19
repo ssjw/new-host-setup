@@ -12,6 +12,7 @@ Preparing A Raspberry Pi for Duty
 - [Enabling SSH-server on Debian](#enabling-ssh-server-on-debian)
 - [Configuring a Static IP for the
     Interface](#configuring-a-static-ip-for-the-interface)
+- [Updating Hostname](#updating-hostname)
 - [Changing Systemd Boot Target Systemd OSes](#changing-systemd-boot-target-on-systemd-oses)
 - [Configuring gocryptfs for Encrypted Home
     Directories](#configuring-gocryptfs-for-encrypted-home-directories)
@@ -87,6 +88,16 @@ servers to Google's name servers:
     noipv6rs
     static routers=192.168.1.1
     static domain_name_servers=8.8.8.8 8.8.4.4
+
+# Updating Hostname
+
+1. Change /etc/hostname to the short hostname (e.g. nextcloud)
+2. Change /etc/hosts so that there is a line for the hostname with the fully
+   qualified domain name (e.g. `192.168.1.101 nextcloud.pigsn.space nextcloud`)
+3. Execute `hostname $(cat /etc/hostname)`
+
+`hostname --fqdn` should now show the fully qualified domainname, and
+`hostname` should show just the hostname.
 
 # Changing Systemd Boot Target on Systemd OSes
 A seemingly good explanation of Systemd is at
