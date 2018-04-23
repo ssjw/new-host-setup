@@ -167,10 +167,8 @@ as _not_ all users have encrypted home directories.
 	#root=postmaster  
 	root=jonathan@ourplaceontheweb.org  
   
-	# The place where the mail goes. The actual machine name is required
-	no  
-	# MX records are consulted. Commonly mailhosts are named
-	mail.domain.com  
+	# The place where the mail goes. The actual machine name is required no  
+	# MX records are consulted. Commonly mailhosts are named mail.domain.com  
 	mailhub=smtp.gmail.com:587  
   
 	# Where will the mail seem to come from?  
