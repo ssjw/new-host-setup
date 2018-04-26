@@ -1,0 +1,64 @@
+*** decrypt_keyctl.orig	2018-04-26 05:07:44.698716806 -0400
+--- decrypt_keyctl	2018-04-26 05:15:51.252234270 -0400
+***************
+*** 31,37 ****
+  test -x "$STTY_" && PW_READER_='stty'           # 1. backup method
+  test -x "$ASKPASS_" && PW_READER_='askpass'     # prefered method
+  
+! KID_=$(keyctl search @u user "$ID_" 2>/dev/null)
+  if [ $? -ne 0 ] || [ -z "$KID_" ] || [ "$CRYPTTAB_TRIED" -gt 0 ]; then
+      # key not found or wrong, ask the user
+      case "$PW_READER_" in
+--- 31,37 ----
+  test -x "$STTY_" && PW_READER_='stty'           # 1. backup method
+  test -x "$ASKPASS_" && PW_READER_='askpass'     # prefered method
+  
+! KID_=$(keyctl search @s user "$ID_" 2>/dev/null)
+  if [ $? -ne 0 ] || [ -z "$KID_" ] || [ "$CRYPTTAB_TRIED" -gt 0 ]; then
+      # key not found or wrong, ask the user
+      case "$PW_READER_" in
+***************
+*** 70,82 ****
+          # I have cached wrong password and now i may use either `keyctl update`
+          # to update $KID_ or just unlink old key, and add new. With `update` i
+          # may hit "Key has expired", though. So i'll go "unlink and add" way.
+!         keyctl unlink $KID_ @u
+          KID_=""
+      fi
+!     KID_=$(echo -n "$KEY_" |keyctl padd user "$ID_" @u)
+      [ -z "$KID_" ] && die "Error adding passphrase to kernel keyring"
+      if ! keyctl timeout $KID_ $TIMEOUT_; then
+!         keyctl unlink $KID_ @u
+          die "Error setting timeout on key ($KID_), removing"
+      fi
+  else
+--- 70,98 ----
+          # I have cached wrong password and now i may use either `keyctl update`
+          # to update $KID_ or just unlink old key, and add new. With `update` i
+          # may hit "Key has expired", though. So i'll go "unlink and add" way.
+!         keyctl unlink $KID_
+          KID_=""
+      fi
+!     # Creating a new keyring to store the key ensures that we will have the
+!     # privileges required to set the timeout on it. If the keyring with the
+!     # given name already exists it will be replaced and any keys on it will be
+!     # unlinked and no longer available. We add it to the session keyring
+!     # because we have the required privileges on that keyring. If added to the
+!     # user (@u) keyring, we would lose the privilege to set attributes of keys
+!     # on the new keyring, even though we own it (we would lose possession).
+!     # Creating a new keyring does mean that after we are done starting
+!     # encrypted disks that the newly created keyring will hang around until the
+!     # session is terminated, but there will be no non-expired keys on it after
+!     # the timeout, and after (by default 3 days) the keyring will be reaped by
+!     # the kernel.
+!     KEYRINGID_=$(keyctl newring decrypt_keyctl @s)
+!     if [ $? -ne 0 ]; then
+!         die "Error creating new keyring."
+!     fi
+!     KID_=$(echo -n "$KEY_" |keyctl padd user "$ID_" "$KEYRINGID_")
+      [ -z "$KID_" ] && die "Error adding passphrase to kernel keyring"
+      if ! keyctl timeout $KID_ $TIMEOUT_; then
+!         keyctl unlink $KID_
+          die "Error setting timeout on key ($KID_), removing"
+      fi
+  else
