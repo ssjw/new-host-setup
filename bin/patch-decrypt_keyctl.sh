@@ -2,7 +2,9 @@
 
 logfile="$(basename $0)-$(date +%FT%T).log"
 
-MYDIR_=$(dirname $0)
+pushd $(dirname $0)
+MYDIR_=$(pwd)
+popd
 
 do_stuff() {
     pushd /lib/cryptsetup/scripts
@@ -14,6 +16,6 @@ do_stuff() {
     popd
 }
 
-do_stuff 2&>1 | tee $logfile
+do_stuff 2>&1 | tee $logfile
 
 # vim:sts=4:sw=4:tw=76
