@@ -8,7 +8,6 @@ popd
 
 do_stuff() {
     pushd /lib/cryptsetup/scripts
-    echo "Patching decrypt_keyctl..."
     patch decrypt_keyctl $MYDIR_/../setup-files/decrypt_keyctl.patch
     if [ $? -ne 0 ]; then
         die "Error patching /lib/cryptsetup/scripts/decrypt_keyctl. You'd better investigate."
