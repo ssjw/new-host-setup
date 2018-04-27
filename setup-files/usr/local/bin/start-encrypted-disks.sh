@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash
 
 # This script starts the encrypted disks, mounts any mount points with the
 # noauto option, and then runs any executable files found in
