@@ -4,9 +4,9 @@
 
 logfile="$(basename $0)-$(date +%FT%T).log"
 
-mkdir -p /home2 2>&1 | tee $logfile
+mkdir -p /unlocker 2>&1 | tee $logfile
 
-adduser --home /home2/unlocker --gecos "" unlocker  2>&1 | tee -a $logfile
+adduser --home /unlocker --gecos "" unlocker  2>&1 | tee -a $logfile
 
 adduser unlocker sudo
 
