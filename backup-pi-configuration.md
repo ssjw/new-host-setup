@@ -392,6 +392,7 @@ with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
 ## Setup `/etc/crypttab`
 
 Edit /etc/crypttab
+TODO: Update this to what is currently on weaksauce.
 
     # <target name> <source device> <key file> <options>
     # Wait for 24 hours for someone to enter a password
@@ -582,6 +583,10 @@ You should be asked to enter a password, and once a correct one has been
 entered the Pi will boot up the rest of the way.
 
 # Opening Encrypted Disks After Boot
+> **TODO**: Update to reflect the new patch-decrypt_keyctl script.
+> **TODO**: Add note about the `systemd-tty-ask-passwd-agent` (basically,
+> put process in background and run that command to enter the password, then
+> bring process back into the foreground).
 
 If you want to be able to boot the system without first having to open
 encrypted disks (and being forced to be present at the console to enter
