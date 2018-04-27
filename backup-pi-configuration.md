@@ -370,7 +370,7 @@ Create the encrypted volume:
 
 Save password in LastPass
 
-TODO: create hard copy and put in safe.
+> **TODO**: create hard copy and put in safe.
 
 ## Open the Encrypted Volumes
 
@@ -392,7 +392,8 @@ with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
 ## Setup `/etc/crypttab`
 
 Edit /etc/crypttab
-TODO: Update this to what is currently on weaksauce.
+
+> **TODO**: Update this to what is currently on weaksauce.
 
     # <target name> <source device> <key file> <options>
     # Wait for 24 hours for someone to enter a password
@@ -584,6 +585,7 @@ entered the Pi will boot up the rest of the way.
 
 # Opening Encrypted Disks After Boot
 > **TODO**: Update to reflect the new patch-decrypt_keyctl script.
+
 > **TODO**: Add note about the `systemd-tty-ask-passwd-agent` (basically,
 > put process in background and run that command to enter the password, then
 > bring process back into the foreground).
