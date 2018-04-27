@@ -4,8 +4,7 @@
 
 logfile="$(basename $0)-$(date +%FT%T).log"
 
-cd "$(dirname $0)"
-. ./setup-vars
+. $(dirname $0)/setup-vars
 . $(dirname $0)/functions.sh
 
 PACKAGE_LIST="cryptsetup-bin gawk"
