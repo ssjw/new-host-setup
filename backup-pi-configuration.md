@@ -7,34 +7,49 @@ Preparing A Raspberry Pi for Duty
 
 <main>
 
-- [Todo](#todo)
-- [Firewall configuration for SSH](#firewall-configuration-for-ssh)
-- [Enabling SSH-server on Debian](#enabling-ssh-server-on-debian)
-- [Configuring a Static IP for the
-    Interface](#configuring-a-static-ip-for-the-interface)
-- [Updating Hostname](#updating-hostname)
-- [Changing Systemd Boot Target Systemd OSes](#changing-systemd-boot-target-on-systemd-oses)
-- [Configuring gocryptfs for Encrypted Home
-    Directories](#configuring-gocryptfs-for-encrypted-home-directories)
-- [SSMTP Configuration](#ssmtp-configuration)
-- [Google Two-Factor Authentication](#google-two-factor-authentication)
-- [Adduser](#adduser)
-- [Disable Passwordless sudo](#disable-passwordless-sudo)
-- [Install BURP](#install-burp)
-- [Add ufw Firewall Rule for BURP](#add-ufw-firewall-rule-for-burp)
-- [Router Port Forwarding](#router-port-forwarding)
-- [Configuring BURP to Start on Boot](#configuring-burp-to-start-on-boot)
-- [Sensible Encryption Setup](#sensible-encryption-setup)
-- [Setting Up Disk Encryption](#setting-up-disk-encryption)
-- [Moving Root to a USB Device](#moving-root-to-a-usb-device)
-- [Root on an Encrypted Multi-Device
-  Filesystem](#root-on-an-encrypted-multi-device-filesystem)
-- [Swap files Don't Work on BTRFS](#swap-files-dont-work-on-btrfs)
-- [How to SSH into the Pi to Unlock the Encrypted
-  Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
-- [Opening Encrypted Disks After Boot](#opening-encrypted-disks-after-boot)
-- [Configuring Windows Clients to Backup to Two Backup
-  Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
+<!-- vim-markdown-toc GFM -->
+
+* [Todo](#todo)
+* [Firewall configuration for SSH](#firewall-configuration-for-ssh)
+* [Enabling SSH-server on Debian](#enabling-ssh-server-on-debian)
+* [Configuring a Static IP for the Interface](#configuring-a-static-ip-for-the-interface)
+* [Updating Hostname](#updating-hostname)
+* [Changing Systemd Boot Target on Systemd OSes](#changing-systemd-boot-target-on-systemd-oses)
+* [Configuring gocryptfs for Encrypted Home Directories](#configuring-gocryptfs-for-encrypted-home-directories)
+    * [Installation](#installation)
+    * [Create a gocryptfs Filesystem:](#create-a-gocryptfs-filesystem)
+    * [Configuration](#configuration)
+    * [Add volume configuration to pam_mount.conf.xml](#add-volume-configuration-to-pam_mountconfxml)
+* [SSMTP Configuration](#ssmtp-configuration)
+    * [ssmtp.conf](#ssmtpconf)
+    * [revaliases](#revaliases)
+* [Google Two-Factor Authentication](#google-two-factor-authentication)
+    * [Create an Authentication Key](#create-an-authentication-key)
+* [Adduser](#adduser)
+* [Disable Passwordless sudo](#disable-passwordless-sudo)
+* [Install BURP](#install-burp)
+* [Add ufw Firewall Rule for BURP](#add-ufw-firewall-rule-for-burp)
+* [Router Port Forwarding](#router-port-forwarding)
+* [Configuring BURP to Start on Boot](#configuring-burp-to-start-on-boot)
+* [Sensible Encryption Setup](#sensible-encryption-setup)
+    * [Normal operation](#normal-operation)
+* [Setting Up Disk Encryption](#setting-up-disk-encryption)
+    * [Write Random Noise to Disk to Mask Filesystem](#write-random-noise-to-disk-to-mask-filesystem)
+    * [Encrypt the Disks](#encrypt-the-disks)
+    * [Open the Encrypted Volumes](#open-the-encrypted-volumes)
+    * [Create Filesystem on Encrypted Volumes](#create-filesystem-on-encrypted-volumes)
+    * [Setup `/etc/crypttab`](#setup-etccrypttab)
+    * [Configure `/etc/fstab`](#configure-etcfstab)
+    * [Updating /etc/fstab in a systemd System](#updating-etcfstab-in-a-systemd-system)
+    * [Update initramfs](#update-initramfs)
+* [Opening Encrypted Disks After Boot](#opening-encrypted-disks-after-boot)
+* [Setup an Encrypted Swap Partition](#setup-an-encrypted-swap-partition)
+* [Moving Root to a USB Device](#moving-root-to-a-usb-device)
+* [Root on an Encrypted Multi-Device Filesystem](#root-on-an-encrypted-multi-device-filesystem)
+* [How to SSH into the Pi to Unlock the Encrypted Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
+* [Configuring Windows Clients to Backup to Two Backup Servers](#configuring-windows-clients-to-backup-to-two-backup-servers)
+
+<!-- vim-markdown-toc -->
 
 # Todo
 - [ ] setup SSH server
@@ -393,23 +408,22 @@ with the names given (/dev/mapper/enc1, /dev/mapper/enc2, ...)
 
 Edit /etc/crypttab
 
-> **TODO**: Update this to what is currently on weaksauce.
-
     # <target name> <source device> <key file> <options>
     # Wait for 24 hours for someone to enter a password
-    enc1 /dev/disk/by-uuid/8515c30a-9227-41a0-9b85-98dba70af9dc /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
-    enc2 /dev/disk/by-uuid/489e4f61-e8f8-4d95-9fbe-afe75414bc3f /lib/cryptsetup/scripts/decrypt_keyctl luks,timeout=86400
+    enc1 /dev/disk/by-uuid/87354443-1b60-4565-862d-e8824a9205ca disk_group keyscript=/lib/cryptsetup/scripts/decrypt_keyctl,noauto,luks,timeout=86400
+    enc2 /dev/disk/by-uuid/77bfa0b8-f7ac-4a5d-8915-2e1ad1b74736 disk_group keyscript=/lib/cryptsetup/scripts/decrypt_keyctl,noauto,luks,timeout=86400
+    swap /dev/disk/by-partuuid/a71d0cc3-02 /dev/urandom swap,cipher=aes-xts-plain64,size=512
 
 Specifying the path to a script for the `<key file>` parameter tells the
 `cryptdisks_start` command to use the given script to get the password
 needed to open the disk. I use the `decrypt_keyctl` script with a patch
 applied that I've developed to make it work over an ssh session.
 
-> *NOTE*: With systemd (default for Ubuntu 15.10, and Debian Jessie), if you
-> are logging in at the graphical interface and if you've specified `none`
-> for the `<key file>` parameter, the second volume is opened automatically
-> for you after typing in the password at the terminal to open the first
-> encrypted volume.
+> **NOTE**: With systemd (default for Ubuntu 15.10, and Debian Jessie), if
+> you are logging in at the graphical interface and if you've specified
+> `none` for the `<key file>` parameter, the second volume is opened
+> automatically for you after typing in the password at the terminal to open
+> the first encrypted volume.
 
 ## Configure `/etc/fstab`
 
@@ -427,7 +441,7 @@ cryptsetup will map a GUID to the device name we've specified in the
 `/etc/crypttab` file. For btrfs, use mount options "noatime,compress=lzo".
 Use Google search if you want to know why.
 
-> *NOTE*: For btrfs, the options `compress=lzo` and `nodatacow` are
+> **NOTE**: For btrfs, the options `compress=lzo` and `nodatacow` are
 > incompatible. If you need `nodatacow`, don't specify compression. Enabling
 > compression disables nodatacow.
 
@@ -453,6 +467,66 @@ makes systemd to reparse /etc/fstab and pick up the changes) or reboot.
 
     update-initramfs -u `uname -r`
 
+# Opening Encrypted Disks After Boot
+> **TODO**: Update to reflect the new patch-decrypt_keyctl script.
+
+> **TODO**: Add note about the `systemd-tty-ask-passwd-agent` (basically,
+> put process in background and run that command to enter the password, then
+> bring process back into the foreground).
+
+If you want to be able to boot the system without first having to open
+encrypted disks (and being forced to be present at the console to enter
+the password), add to the options parameter in the `/etc/crypttab` file the
+option "noauto" for each encrypted device, and the same option to the
+mountpoints within the encrypted devices to /etc/fstab.
+
+To be able to open the encrypted devices over a remote connection, you'll
+have to patch `/lib/cryptsetup/scripts/decrypt_keyctl` using the
+`decrypt_keyctl.patch` patch file in this directory.
+
+	cd /lib/cryptsetup/scripts
+	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
+
+See the `decrypt_keyctl.patch` file for an explanation.
+
+After those setup steps are complete, your system will boot without attempting
+to open the encrypted devices and mounting the contained filesystems.  You can
+then remote to the host at your leisure and open encrypted devices and mount
+filesystems like so:
+
+	sudo cryptdisks_start enc1
+	sudo cryptdisks_start enc2
+	sudo cryptdisks_start enc3
+	sudo mount /var/spool/burp
+	sudo mount /mnt/media
+
+# Setup an Encrypted Swap Partition
+Swap files Don't Work on BTRFS
+
+For details see:
+[https://btrfs.wiki.kernel.org/index.php/FAQ\#Does\_btrfs\_support\_swap\_files.3F]
+
+Work around is an encrypted swap partition.
+
+Create a partition.
+
+> *NOTE*: Use gparted instead. It will create a GUID partition table by
+> default, and takes care of alignment.
+
+    # parted /dev/sde
+    (parted) mkpart primary linux-swap 1MiB 512MiB
+    (parted) align-check optimal 1
+    optimal
+    (parted) quit
+
+Update /etc/crypttab
+
+    swap /dev/disk/by-partuuid/xxx /dev/urandom swap,cipher=aes-xts-plain64,size=512
+
+Update /etc/fstab
+
+    /dev/mapper/swap none swap sw 0 0
+
 # Moving Root to a USB Device
 A very good article on how to do this is in a [forum
 post](https://www.raspberrypi.org/forums/viewtopic.php?f=29&t=44177) at
@@ -470,9 +544,9 @@ Gotchas:
    benefits of btrfs or some other filesystem?
 
 # Root on an Encrypted Multi-Device Filesystem
-> *NOTE*: I don't do this anymore.  Much too painful.  Instead I just put home
-> and any other sensitive directories not needed to boot on an encrypted
-> filesystem that is mounted post boot.
+> **NOTE**: I don't do this anymore.  Much too painful.  Instead I just put
+> home and any other sensitive directories not needed to boot on an
+> encrypted filesystem that is mounted post boot.
 
 Like a btrfs filesystem on top of multiple encrypted hard disks.
 
@@ -504,32 +578,6 @@ subvolume.
 Check crypttab to be sure there is an entry for each encrypted disk.
 These entries tell the boot scripts in the initial ramdisk which disks
 need to be opened before mounting any filesystems
-
-# Swap files Don't Work on BTRFS
-
-For details see:
-[https://btrfs.wiki.kernel.org/index.php/FAQ\#Does\_btrfs\_support\_swap\_files.3F]
-
-Work around is an encrypted swap partition.
-
-Create a partition.
-
-> *NOTE*: Use gparted instead. It will create a GUID partition table by
-> default, and takes care of alignment.
-
-    # parted /dev/sde
-    (parted) mkpart primary linux-swap 1MiB 512MiB
-    (parted) align-check optimal 1
-    optimal
-    (parted) quit
-
-Update /etc/crypttab
-
-    swap /dev/disk/by-partuuid/xxx /dev/urandom swap,cipher=aes-xts-plain64,size=512
-
-Update /etc/fstab
-
-    /dev/mapper/swap none swap sw 0 0
 
 # How to SSH into the Pi to Unlock the Encrypted Disks
 
@@ -582,39 +630,6 @@ the Pi).
 
 You should be asked to enter a password, and once a correct one has been
 entered the Pi will boot up the rest of the way.
-
-# Opening Encrypted Disks After Boot
-> **TODO**: Update to reflect the new patch-decrypt_keyctl script.
-
-> **TODO**: Add note about the `systemd-tty-ask-passwd-agent` (basically,
-> put process in background and run that command to enter the password, then
-> bring process back into the foreground).
-
-If you want to be able to boot the system without first having to open
-encrypted disks (and being forced to be present at the console to enter
-the password), add to the options parameter in the `/etc/crypttab` file the
-option "noauto" for each encrypted device, and the same option to the
-mountpoints within the encrypted devices to /etc/fstab.
-
-To be able to open the encrypted devices over a remote connection, you'll
-have to patch `/lib/cryptsetup/scripts/decrypt_keyctl` using the
-`decrypt_keyctl.patch` patch file in this directory.
-
-	cd /lib/cryptsetup/scripts
-	patch decrypt_keyctl ~jwheaton/src/new-host-setup/decrypt_keyctl.patch
-
-See the `decrypt_keyctl.patch` file for an explanation.
-
-After those setup steps are complete, your system will boot without attempting
-to open the encrypted devices and mounting the contained filesystems.  You can
-then remote to the host at your leisure and open encrypted devices and mount
-filesystems like so:
-
-	sudo cryptdisks_start enc1
-	sudo cryptdisks_start enc2
-	sudo cryptdisks_start enc3
-	sudo mount /var/spool/burp
-	sudo mount /mnt/media
 
 # Configuring Windows Clients to Backup to Two Backup Servers
 
