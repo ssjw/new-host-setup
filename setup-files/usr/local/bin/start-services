@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash
 
 # Start the services passed on the commandline.
 
@@ -9,19 +9,13 @@ fi
 
 while (( "$#" )); do
     service_state=$(systemctl is-active ${1})
-    if [ "${service_state}" == "active" ]; then
-        systemctl status ${1} | grep -qs 'active\s*(running)'
-        if [ $? == 0 ]; then
-            echo "${1} is already running, skipping"
-        else
-            echo "Starting ${1}"
-            systemctl start ${1}
-            systemctl status --no-pager ${1}
-            sleep 2
-        fi
+    if [ "${service_state}" != "active" ]; then
+        echo "Starting ${1}"
+        systemctl start ${1}
+        systemctl status --no-pager ${1}
+        sleep 2
     else
-        >&2 echo "\"systemctl is-active ${1}\" returned \"${service_state}\"."
-        >&2 echo "Only services that are \"active\" are started. Skipping ${1}."
+        echo "${1} is already running, skipping"
     fi
 
     shift
