@@ -91,10 +91,10 @@ network interfaces.  It's configuration needs to be changed to switch the
 eth0 interface (or wifi interface if using wifi) to be a static address
 instead of one leased from the dhcp server.
 
-Edit /etc/dhcpcd.  Find the example static IP configuration section and
-update to something like the following example, which sets ipv4 address to
-192.168.1.101, disables ipv6 addresses, sets static routers, and sets name
-servers to Google's name servers:
+Edit `/etc/dhcpcd.conf`.  Find the example static IP configuration section
+and update to something like the following example, which sets ipv4 address
+to 192.168.1.101, disables ipv6 addresses, sets static routers, and sets
+name servers to Google's name servers:
 
     # Example static IP configuration:
     interface eth0
