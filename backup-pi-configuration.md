@@ -44,6 +44,7 @@ Preparing A Raspberry Pi for Duty
     * [Update initramfs](#update-initramfs)
 * [Opening Encrypted Disks After Boot](#opening-encrypted-disks-after-boot)
 * [Setup an Encrypted Swap Partition](#setup-an-encrypted-swap-partition)
+* [Preventing Hard Drives on a USB Interface Spinning Down](#preventing-hard-drives-on-a-usb-interface-spinning-down)
 * [Moving Root to a USB Device](#moving-root-to-a-usb-device)
 * [Root on an Encrypted Multi-Device Filesystem](#root-on-an-encrypted-multi-device-filesystem)
 * [How to SSH into the Pi to Unlock the Encrypted Disks](#how-to-ssh-into-the-pi-to-unlock-the-encrypted-disks)
@@ -180,7 +181,7 @@ as _not_ all users have encrypted home directories.
 	# The person who gets all mail for userids &lt; 1000  
 	# Make this empty to disable rewriting.  
 	#root=postmaster  
-	root=jonathan@ourplaceontheweb.org  
+	root=jhwheaton@gmail.com
   
 	# The place where the mail goes. The actual machine name is required no  
 	# MX records are consulted. Commonly mailhosts are named mail.domain.com  
@@ -190,7 +191,7 @@ as _not_ all users have encrypted home directories.
 	#rewriteDomain=  
 	  
 	# The full hostname  
-	hostname=backuppi@ourplaceontheweb.org  
+	hostname=backuppi@pigsn.space
 	  
 	UseSTARTTLS=YES  
 	AuthUser=jhwheaton  
@@ -211,8 +212,8 @@ as _not_ all users have encrypted home directories.
 	#  
 	# Example: root:your_login@your.domain:mailhub.your.domain[:port]  
 	# where [:port] is an optional port number that defaults to 25.  
-	root:root@backuppi.ourplaceontheweb.org:smtp.gmail.com:587  
-	jwheaton:jwheaton@backuppi.ourplaceontheweb.org:smtp.gmail.com:587
+	root:root@backuppi.pigsn.space:smtp.gmail.com:587  
+	jwheaton:jwheaton@backuppi.pigsn.space:smtp.gmail.com:587
 
 # Google Two-Factor Authentication
 
@@ -526,6 +527,23 @@ Update /etc/crypttab
 Update /etc/fstab
 
     /dev/mapper/swap none swap sw 0 0
+
+# Preventing Hard Drives on a USB Interface Spinning Down
+Hard drives on a USB interface may spin down when idle, leading to a long
+pause to access the drive after some idle time. On a SATA interface you
+could use the `hdparm` utility to set the drive to never spin down, but this
+doesn't work on some USB enclosures (the ones I'm using). As an alternative,
+I just created a cron job that runs every 2 minutes and just runs a `btrfs
+filesystem show` command, sending it to `/dev/null`. Simple and effective.
+
+    sudo cat - > /etc/cron.d/no-spin <<EOF
+    # /etc/cron.d/no-spin: crontab entries to prevent disks from spinning down.
+    
+    SHELL=/bin/sh
+    PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+    
+    */2 * * * *   root      btrfs filesystem show /dev/mapper/enc1 >/dev/null;
+    EOF
 
 # Moving Root to a USB Device
 A very good article on how to do this is in a [forum
