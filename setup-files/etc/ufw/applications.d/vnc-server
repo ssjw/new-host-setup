@@ -1,0 +1,4 @@
+[vnc-server]
+title=VNC Server
+description=VNC Server
+ports=5901/tcp

@@ -1,0 +1,9 @@
+[subsonic https]
+title=Subsonic media server over https
+description=Subsonic media server
+ports=4443/tcp
+
+[subsonic http]
+title=Subsonic media server over http
+description=Subsonic media server
+ports=4040/tcp
