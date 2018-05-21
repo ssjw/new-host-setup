@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Copy local files to /usr/local.
+
+logfile="$(basename $0)-$(date +%FT%T).log"
+
+# cd into the directory the script resides in.
+pushd $(dirname $0)
+
+. ./setup-vars
+
+# An associative array of files and their destinations.
+declare -A file_list
+
+do_stuff() {
+    echo "Copying application files."
+    ./setup-local-files ufw
+
+    echo "Allowing applications through firewall."
+    ufw allow OpenSSH
+    ufw allow mosh
+    ufw allow from 127.0.0.1/32 to 127.0.0.1/32 app vnc-server
+
+    echo "Enabling ufw firewall."
+    ufw enable
+}
+
+do_stuff 2>&1 | tee $logfile
+
+popd
+
+# vim:sts=4:sw=4:tw=76
