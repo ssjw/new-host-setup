@@ -12,20 +12,52 @@ pushd $(dirname $0)
 # An associative array of files and their destinations.
 declare -A file_list
 
+# The index is the directory to copy from.
+# The value is the directory to copy to.
 file_list["../setup-files/usr/local"]="/usr"
 file_list["../setup-files/etc/ufw"]="/etc"
 
+declare -A arg_map
+
+arg_map["local"]="../setup-files/usr/local"
+arg_map["ufw"]="../setup-files/etc/ufw"
+
+
 do_stuff() {
     echo "Copying files to their destinations..."
-    for i in "${!file_list[@]}";
+    # Do recursive copy.
+    cp -dRv "$1" "${file_list[$1]}" 
+}
+
+usage() {
+    echo "usage: $(basename $0) op"
+    echo "Where op is one of:"
+    for i in "${!arg_map[@]}";
     do
         # Do recursive copy.
-        cp -dRv "$i" "${file_list[$i]}" 
+        echo "    $i"
     done
 }
 
-do_stuff 2>&1 | tee $logfile
+if [ -z "$1" ]; then
+    usage
+    exit 1
+fi
+
+case $1 in
+    local)
+        index=${arg_map["local"]}
+        ;;
+    ufw)
+        index=${arg_map["ufw"]}
+        ;;
+    else)
+        usage
+        exit 1
+esac
+
+do_stuff $index 2>&1 | tee $logfile
 
 popd
 
-# vim:sts=4:sw=4:tw=76
+vim:sts=4:sw=4:tw=76
