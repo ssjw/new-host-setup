@@ -9,13 +9,6 @@ pushd $(dirname $0)
 
 . ./setup-vars
 
-if [ -z $1 ]; then
-    usage
-    exit 1
-else
-    user_="$1"
-fi
-
 usage() {
     echo "Usage: $(basename $0) <username>"
 }
@@ -66,6 +59,13 @@ do_stuff() {
 
     echo "All done with VNC setup!"
 }
+
+if [ -z $1 ]; then
+    usage
+    exit 1
+else
+    user_="$1"
+fi
 
 do_stuff 2>&1 | tee $logfile
 
