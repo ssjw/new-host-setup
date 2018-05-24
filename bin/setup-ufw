@@ -9,9 +9,6 @@ pushd $(dirname $0)
 
 . ./setup-vars
 
-# An associative array of files and their destinations.
-declare -A file_list
-
 do_stuff() {
     echo "Copying application files."
     ./setup-local-files ufw

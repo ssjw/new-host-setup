@@ -16,12 +16,13 @@ declare -A file_list
 # The value is the directory to copy to.
 file_list["../setup-files/usr/local"]="/usr"
 file_list["../setup-files/etc/ufw"]="/etc"
+file_list["../setup-files/etc/systemd/service/vncserver@.service"]="/etc/systemd/service"
 
 declare -A arg_map
 
 arg_map["local"]="../setup-files/usr/local"
 arg_map["ufw"]="../setup-files/etc/ufw"
-
+arg_map["vnc"]="../setup-files/etc/systemd/service/vncserver@.service"
 
 do_stuff() {
     echo "Copying files to their destinations..."
@@ -50,6 +51,9 @@ case $1 in
         ;;
     ufw)
         index=${arg_map["ufw"]}
+        ;;
+    vnc)
+        index=${arg_map["vnc"]}
         ;;
     else)
         usage

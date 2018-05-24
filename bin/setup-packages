@@ -7,7 +7,7 @@ logfile="$(basename $0)-$(date +%FT%T).log"
 . $(dirname $0)/setup-vars
 . $(dirname $0)/functions.sh
 
-PACKAGE_LIST="cryptsetup-bin gawk tmuxinator tmux mosh openssh-server vnc4server"
+PACKAGE_LIST="cryptsetup-bin gawk tmuxinator tmux mosh openssh-server"
 
 do_stuff() {
     apt_get_update && \

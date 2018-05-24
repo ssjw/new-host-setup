@@ -1,0 +1,14 @@
+[Unit]
+Description=Systemd VNC server startup script for Ubuntu 18.04
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=linuxconfig
+ExecStartPre=-/usr/bin/vncserver -kill :%i &> /dev/null
+ExecStart=/usr/bin/vncserver -depth 24 -geometry 1536x1152 :%i
+PIDFile=/home/linuxconfig/.vnc/%H:%i.pid
+ExecStop=/usr/bin/vncserver -kill :%i
+
+[Install]
+WantedBy=multi-user.target

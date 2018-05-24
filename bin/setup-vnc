@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Copy local files to /usr/local.
+
+logfile="$(basename $0)-$(date +%FT%T).log"
+
+# cd into the directory the script resides in.
+pushd $(dirname $0)
+
+. ./setup-vars
+
+if [ -z $1 ]; then
+    usage
+    exit 1
+else
+    user_="$1"
+fi
+
+usage() {
+    echo "Usage: $(basename $0) <username>"
+}
+
+run_vncpasswd() {
+    if [ -z $1 ]; then
+        echo "Error: run_vncpasswd\(\) requires a username argument."
+        exit 1
+    fi
+
+    su -c 'vncpasswd' $1
+}
+
+do_stuff() {
+    echo "installing vnc4server."
+    apt-get install -y vnc4server
+
+    echo "Setting vnc password."
+    run_vncpasswd $user_
+
+    echo "Creating ~/.vnc/xstartup."
+    su -c "mkdir ~/.vnc" $user_
+    su -c "echo \"#!/bin/bash\" > ~/.vnc/xstartup" $user_
+    su -c "echo \"/usr/bin/lxsession -s Lubuntu -e LXDE\" >> ~/.vnc/xstartup" $user_
+    su -c "chmod 755 ~/.vnc/xstartup" $user_
+
+    echo "Installing systemd startup script."
+    ./setup-local-files vnc
+
+    echo "Injecting username into the startup script."
+    # Using sed, edit in place and save a backup.
+    sed --in-place=$(date +%FT%T) "s/linuxconfig/$user_/" /etc/systemd/service/vncserver@.service
+
+    echo "Enabling vnc on startup."
+    systemctl daemon-reload
+    systemctl enable vncserver@1
+
+    echo "Starting VNC desktop service."
+    service vncserver@1 start
+    systemctl status --no-pager vncserver@1
+
+    # Make sure firewall is setup to accept vnc connections.
+    ufw status | grep -qs vnc-server
+    if [ $? == 1 ]; then
+        echo "The firewall has not been setup to allow vnc connections."
+        echo "Setup the ufw firewall using the \"setup-ufw\" script."
+    fi
+
+    echo "All done with VNC setup!"
+}
+
+do_stuff 2>&1 | tee $logfile
+
+popd
+
+# vim:sts=4:sw=4:tw=76
