@@ -58,10 +58,11 @@ case $1 in
     else)
         usage
         exit 1
+        ;;
 esac
 
 do_stuff $index 2>&1 | tee $logfile
 
 popd
 
-vim:sts=4:sw=4:tw=76
+# vim:sts=4:sw=4:tw=76
