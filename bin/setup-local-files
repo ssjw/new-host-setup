@@ -2,32 +2,33 @@
 
 # Copy local files to /usr/local.
 
-logfile="$(basename $0)-$(date +%FT%T).log"
-
-# cd into the directory the script resides in.
-pushd $(dirname $0)
-
-. ./setup-vars
-
 # An associative array of files and their destinations.
 declare -A file_list
 
 # The index is the directory to copy from.
 # The value is the directory to copy to.
+# Relative paths are relative to the bin/ directory.
 file_list["../setup-files/usr/local"]="/usr"
 file_list["../setup-files/etc/ufw"]="/etc"
-file_list["../setup-files/etc/systemd/service/vncserver@.service"]="/etc/systemd/service"
+file_list["../setup-files/etc/systemd/system/vncserver@.service"]="/etc/systemd/system"
 
 declare -A arg_map
 
 arg_map["local"]="../setup-files/usr/local"
 arg_map["ufw"]="../setup-files/etc/ufw"
-arg_map["vnc"]="../setup-files/etc/systemd/service/vncserver@.service"
+arg_map["vnc"]="../setup-files/etc/systemd/system/vncserver@.service"
 
 do_stuff() {
+    # cd into the directory the script resides in.
+    pushd $(dirname $0)
+
+    . ./setup-vars
+
     echo "Copying files to their destinations..."
     # Do recursive copy.
     cp -dRv "$1" "${file_list[$1]}" 
+
+    popd
 }
 
 usage() {
@@ -61,8 +62,7 @@ case $1 in
         ;;
 esac
 
+logfile="$(basename $0)-$(date +%FT%T).log"
 do_stuff $index 2>&1 | tee $logfile
-
-popd
 
 # vim:sts=4:sw=4:tw=76
