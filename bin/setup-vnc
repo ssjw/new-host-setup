@@ -38,10 +38,14 @@ do_stuff() {
 
     echo "Injecting username into the startup script."
     # Using sed, edit in place and save a backup.
-    sed --in-place=$(date +%FT%T) "s/linuxconfig/$user_/" /etc/systemd/service/vncserver@.service
+    sed --in-place=$(date +%FT%T) "s/linuxconfig/$user_/" /etc/systemd/system/vncserver@.service
 
     echo "Enabling vnc on startup."
     systemctl daemon-reload
+
+    echo "First disable vnc... this will fail if this is the first"
+    echo "time this script has been run."
+    systemctl disable vncserver@1
     systemctl enable vncserver@1
 
     echo "Starting VNC desktop service."
