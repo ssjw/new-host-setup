@@ -33,8 +33,8 @@ do_stuff() {
     su -c "echo \"/usr/bin/lxsession -s Lubuntu -e LXDE\" >> ~/.vnc/xstartup" $user_
     su -c "chmod 755 ~/.vnc/xstartup" $user_
 
-    #echo "Setting vnc password."
-    #run_vncpasswd $user_
+    echo "Setting vnc password."
+    run_vncpasswd $user_
 
     echo "Installing systemd startup script."
     ./setup-local-files vnc
