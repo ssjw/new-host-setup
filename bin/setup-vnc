@@ -12,7 +12,10 @@ run_vncpasswd() {
         exit 1
     fi
 
-    su -c 'vncpasswd' $1
+    # A password is required for vnc4server to start, but since we will only
+    # allow access to the vnc port from localhost, it's not really needed.
+    su -c "echo \"jjjjjj\" > ~/.vnc/passwd" $1
+    su -c "chmod 600 ~/.vnc/passwd" $1
 }
 
 do_stuff() {
@@ -24,14 +27,14 @@ do_stuff() {
     echo "installing vnc4server."
     apt-get install -y vnc4server
 
-    #echo "Setting vnc password."
-    #run_vncpasswd $user_
-
     echo "Creating ~/.vnc/xstartup."
     su -c "mkdir ~/.vnc" $user_
     su -c "echo \"#!/bin/bash\" > ~/.vnc/xstartup" $user_
     su -c "echo \"/usr/bin/lxsession -s Lubuntu -e LXDE\" >> ~/.vnc/xstartup" $user_
     su -c "chmod 755 ~/.vnc/xstartup" $user_
+
+    #echo "Setting vnc password."
+    #run_vncpasswd $user_
 
     echo "Installing systemd startup script."
     ./setup-local-files vnc
