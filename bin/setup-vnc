@@ -6,18 +6,6 @@ usage() {
     echo "Usage: $(basename $0) <username>"
 }
 
-run_vncpasswd() {
-    if [ -z $1 ]; then
-        echo "Error: run_vncpasswd\(\) requires a username argument."
-        exit 1
-    fi
-
-    # A password is required for vnc4server to start, but since we will only
-    # allow access to the vnc port from localhost, it's not really needed.
-    su -c "echo \"jjjjjj\" > ~/.vnc/passwd" $1
-    su -c "chmod 600 ~/.vnc/passwd" $1
-}
-
 do_stuff() {
     # cd into the directory the script resides in.
     pushd $(dirname $0)
@@ -32,9 +20,6 @@ do_stuff() {
     su -c "echo \"#!/bin/bash\" > ~/.vnc/xstartup" $user_
     su -c "echo \"/usr/bin/lxsession -s Lubuntu -e LXDE\" >> ~/.vnc/xstartup" $user_
     su -c "chmod 755 ~/.vnc/xstartup" $user_
-
-    echo "Setting vnc password."
-    run_vncpasswd $user_
 
     echo "Installing systemd startup script."
     ./setup-local-files vnc
@@ -63,6 +48,11 @@ do_stuff() {
     fi
 
     echo "All done with VNC setup!"
+
+    echo "Two last things to do, that you'll have to do manually."
+    echo "   1) Run the vncpasswd command as the user."
+    echo "   2) Run 'systemctl start vncserver@1' to start vncserver."
+    
     popd
 }
 
