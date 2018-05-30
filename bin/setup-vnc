@@ -36,10 +36,6 @@ do_stuff() {
     systemctl disable vncserver@1
     systemctl enable vncserver@1
 
-    echo "Starting VNC desktop service."
-    service vncserver@1 start
-    systemctl status --no-pager vncserver@1
-
     # Make sure firewall is setup to accept vnc connections.
     ufw status | grep -qs vnc-server
     if [ $? == 1 ]; then
