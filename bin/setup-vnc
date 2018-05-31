@@ -18,6 +18,7 @@ do_stuff() {
     echo "Creating ~/.vnc/xstartup."
     su -c "mkdir ~/.vnc" $user_
     su -c "echo \"#!/bin/bash\" > ~/.vnc/xstartup" $user_
+    su -c "echo \"# This won't work if there is already an lxsession running.\""
     su -c "echo \"/usr/bin/lxsession -s Lubuntu -e LXDE\" >> ~/.vnc/xstartup" $user_
     su -c "chmod 755 ~/.vnc/xstartup" $user_
 
@@ -48,6 +49,8 @@ do_stuff() {
     echo "Two last things to do, that you'll have to do manually."
     echo "   1) Run the vncpasswd command as the user."
     echo "   2) Run 'systemctl start vncserver@1' to start vncserver."
+    echo "   3) Make sure Lubuntu isn't enabled to start at system startup,"
+    echo "      as you can't have two lxsession's running simultaneously."
     
     popd
 }
