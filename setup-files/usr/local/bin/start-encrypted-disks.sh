@@ -28,7 +28,7 @@ do_stuff() {
         if [ $? == 0 ]; then
             echo "${i} is already active, skipping."
         else
-            cryptdisks_start ${i}
+            sudo runuser -l root -c "cryptdisks_start ${i}"
             if [ $? == 1 ]; then
                 >&2 echo "Failed to open encrypted device ${i}. Aborting." 
                 exit 1
